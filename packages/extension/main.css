@@ -1,18 +1,16 @@
 :root {
-  /* bootstrap overried */
-
-  --width: 380px;
-  --white-100: #fff;
-  --gray-100: #b6b3c6;
-  --green-100: #348452;
-  --green-200: #5de09e;
-  --green-300: #60e2a3;
-  --dark-100: #26242b;
-  --dark-200: #444;
-  --red-100: #ff0000;
-  --red-200: #ff4741;
-  --blue-100: #120b48;
-  --blue-200: #413c6d;
+  --hmo-width: 380px;
+  --hmo-white-100: #fff;
+  --hmo-gray-100: #b6b3c6;
+  --hmo-green-100: #348452;
+  --hmo-green-200: #5de09e;
+  --hmo-green-300: #60e2a3;
+  --hmo-dark-100: #26242b;
+  --hmo-dark-200: #444;
+  --hmo-red-100: #ff0000;
+  --hmo-red-200: #ff4741;
+  --hmo-blue-100: #120b48;
+  --hmo-blue-200: #413c6d;
 }
 
 @font-face {
@@ -30,6 +28,14 @@
   src: url("./assets/fonts/Poppins-SemiBold.ttf");
 }
 
+.hmo-d-flex {
+  display: flex;
+}
+
+.hmo-d-flex {
+  display: flex;
+}
+
 .ppReg {
   font-family: ppReg;
 }
@@ -42,7 +48,7 @@
   font-family: ppSB;
 }
 
-.spinner-border {
+.hmo-spinner-border {
   animation-duration: 0.5s;
 }
 
@@ -82,12 +88,13 @@
   width: 300px;
   max-height: 439px;
   height: auto;
-  background: var(--white-100);
+  background: var(--hmo-white-100);
   border-radius: 24px;
   box-shadow: 0px 0px 20px #0000002c;
   position: fixed;
   top: 20px;
   right: 20px;
+  padding-bottom: 10px;
 }
 
 .help-me-record-comp .heading {
@@ -97,6 +104,7 @@
   flex-direction: column;
   height: auto;
   gap: 15px;
+  padding: 15px 20px;
 }
 
 .help-me-record-comp .heading .top {
@@ -121,16 +129,16 @@
 .help-me-record-comp .heading .top button .help-me-close-icon {
   width: 30px;
   height: auto;
-  fill: var(--gray-100);
+  fill: var(--hmo-gray-100);
   transition: 0.2s ease-in;
 }
 
 .help-me-record-comp .heading .top button .help-me-close-icon:hover {
-  fill: var(--red-200);
+  fill: var(--hmo-red-200);
 }
 
 .help-me-record-comp .heading .bottom p {
-  color: var(--blue-200);
+  color: var(--hmo-blue-200);
   font-size: 13px;
   font-weight: 100;
 }
@@ -140,7 +148,7 @@
   display: flex;
   align-items: center;
   flex-direction: column;
-  padding: 10px 15px;
+  padding: 10px 2.1em;
   gap: 20px;
 }
 
@@ -150,7 +158,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1.4px solid var(--blue-100);
+  border: 1.4px solid var(--hmo-blue-100);
   padding: 10px 15px;
   border-radius: 12px;
 }
@@ -158,6 +166,7 @@
 .help-me-record-comp .help-me-controls .help-me-camera-control .left {
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .help-me-record-comp .help-me-controls .help-me-camera-control .left span {
@@ -167,6 +176,7 @@
 .help-me-record-comp .help-me-controls .help-me-camera-control .left .icon {
   width: 30px;
   height: auto;
+  color: var(--hmo-blue-100);
 }
 
 /* Audio Control Style */
@@ -175,7 +185,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  border: 1.4px solid var(--blue-100);
+  border: 1.4px solid var(--hmo-blue-100);
   padding: 10px 15px;
   border-radius: 12px;
 }
@@ -237,7 +247,7 @@
 }
 
 .help-me-record-comp .help-me-controls input:checked + .slider {
-  background-color: var(--blue-100);
+  background-color: var(--hmo-blue-100);
 }
 
 .help-me-record-comp .help-me-controls input:focus + .slider {
@@ -261,15 +271,32 @@ input:checked + .slider:before {
 
 /* Start Recording Button */
 .help-me-record-comp .help-me-start-record-btn {
-  width: 100%;
-  background: var(--blue-100);
+  min-width: 115%;
+  background: var(--hmo-blue-100);
   padding: 12px 20px;
-  color: var(--white-100);
+  color: var(--hmo-white-100);
   border-radius: 12px;
   transition: 0.2s ease-in-out;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  border: 4px solid transparent;
 }
 
 .help-me-record-comp .help-me-start-record-btn:hover {
-  background: var(--blue-200);
+  background: var(--hmo-blue-200);
   color: #fff;
+}
+
+.help-me-record-comp .help-me-start-record-btn:focus {
+  border: 4px solid var(--hmo-gray-100);
+}
+
+/* Bubble controls */
+.help-me-bubble-control {
+  width: auto;
+  position: fixed;
+  bottom: 2em;
+  left: 2em;
+  background: red;
 }

@@ -5,102 +5,108 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Document</title>
     <link rel="stylesheet" href="./main.css" />
-    <link
+    <!-- <link
       href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css"
       rel="stylesheet"
       integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9"
       crossorigin="anonymous"
-    />
+    /> -->
   </head>
   <body>
-    <div class="help-me-container show">
-      <!-- HelpMe Recorder Component -->
-      <div class="help-me-record-comp pb-3">
-        <div class="heading d-flex py-4 px-4">
-          <div class="top">
-            <img
-              src="chrome-extension://oeefdkjdgjjofnnoamkcgbdkiammhfep/assets/images/logos/logo-2.png"
-              width="100"
-              alt=""
-            />
-            <button class="help-me-close-btn">
-              <svg
-                width="128"
-                height="128"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                class="help-me-close-icon"
-              >
-                <g fill="">
+    <div class="hmo-root-shadow-dom">
+      <div class="help-me-container show">
+        <!-- HelpMe Recorder Component -->
+        <div class="help-me-record-comp">
+          <div class="heading hmo-d-flex py-4 px-4">
+            <div class="top">
+              <img
+                src="chrome-extension://__MSG_@@extension_id__/assets/images/logos/logo-2.png"
+                width="100"
+                alt=""
+                id="help-me-image-extension-logo"
+              />
+              <button class="help-me-close-btn">
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="help-me-close-icon"
+                >
+                  <g fill="">
+                    <path
+                      d="M16.34 9.322a1 1 0 1 0-1.364-1.463l-2.926 2.728L9.322 7.66A1 1 0 0 0 7.86 9.024l2.728 2.926l-2.927 2.728a1 1 0 1 0 1.364 1.462l2.926-2.727l2.728 2.926a1 1 0 1 0 1.462-1.363l-2.727-2.926l2.926-2.728Z"
+                    />
+                    <path
+                      fill-rule="evenodd"
+                      d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12Zm11 9a9 9 0 1 1 0-18a9 9 0 0 1 0 18Z"
+                      clip-rule="evenodd"
+                    />
+                  </g>
+                </svg>
+              </button>
+            </div>
+            <div class="bottom">
+              <p class="ppReg">
+                This extension helps you record and share help videos with ease.
+              </p>
+            </div>
+          </div>
+          <div class="help-me-controls">
+            <div class="help-me-camera-control">
+              <div class="left hmo-d-flex gap-2">
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 32 32"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
+                >
                   <path
-                    d="M16.34 9.322a1 1 0 1 0-1.364-1.463l-2.926 2.728L9.322 7.66A1 1 0 0 0 7.86 9.024l2.728 2.926l-2.927 2.728a1 1 0 1 0 1.364 1.462l2.926-2.727l2.728 2.926a1 1 0 1 0 1.462-1.363l-2.727-2.926l2.926-2.728Z"
+                    fill=""
+                    d="M21 26H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v4.06l5.42-3.87A1 1 0 0 1 30 9v14a1 1 0 0 1-1.58.81L23 19.94V24a2 2 0 0 1-2 2ZM4 8v16h17v-6a1 1 0 0 1 1.58-.81L28 21.06V10.94l-5.42 3.87A1 1 0 0 1 21 14V8Z"
                   />
+                </svg>
+                <span class="ppReg">Camera</span>
+              </div>
+              <div class="right">
+                <label class="switch">
+                  <input type="checkbox" class="help-me-camera-switch" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <div class="help-me-audio-control">
+              <div class="left hmo-d-flex gap-2">
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 1024 1024"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
+                >
                   <path
-                    fill-rule="evenodd"
-                    d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12Zm11 9a9 9 0 1 1 0-18a9 9 0 0 1 0 18Z"
-                    clip-rule="evenodd"
+                    fill="#000000"
+                    d="M842 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 140.3-113.7 254-254 254S258 594.3 258 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 168.7 126.6 307.9 290 327.6V884H326.7c-13.7 0-24.7 14.3-24.7 32v36c0 4.4 2.8 8 6.2 8h407.6c3.4 0 6.2-3.6 6.2-8v-36c0-17.7-11-32-24.7-32H548V782.1c165.3-18 294-158 294-328.1zM512 624c93.9 0 170-75.2 170-168V232c0-92.8-76.1-168-170-168s-170 75.2-170 168v224c0 92.8 76.1 168 170 168zm-94-392c0-50.6 41.9-92 94-92s94 41.4 94 92v224c0 50.6-41.9 92-94 92s-94-41.4-94-92V232z"
                   />
-                </g>
-              </svg>
+                </svg>
+                <span class="ppReg">Audio</span>
+              </div>
+              <div class="right">
+                <label class="switch">
+                  <input type="checkbox" class="help-me-audio-switch" />
+                  <span class="slider round"></span>
+                </label>
+              </div>
+            </div>
+            <button type="button" class="btn help-me-start-record-btn ppSB">
+              Start Recording
             </button>
           </div>
-          <div class="bottom">
-            <p class="ppReg">
-              This extension helps you record and share help videos with ease.
-            </p>
-          </div>
         </div>
-        <div class="help-me-controls px-4">
-          <div class="help-me-camera-control">
-            <div class="left d-flex gap-2">
-              <svg
-                width="128"
-                height="128"
-                viewBox="0 0 32 32"
-                xmlns="http://www.w3.org/2000/svg"
-                class="icon"
-              >
-                <path
-                  fill=""
-                  d="M21 26H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v4.06l5.42-3.87A1 1 0 0 1 30 9v14a1 1 0 0 1-1.58.81L23 19.94V24a2 2 0 0 1-2 2ZM4 8v16h17v-6a1 1 0 0 1 1.58-.81L28 21.06V10.94l-5.42 3.87A1 1 0 0 1 21 14V8Z"
-                />
-              </svg>
-              <span class="ppReg">Camera</span>
-            </div>
-            <div class="right">
-              <label class="switch">
-                <input type="checkbox" class="help-me-camera-switch" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-          </div>
-          <div class="help-me-audio-control">
-            <div class="left d-flex gap-2">
-              <svg
-                width="128"
-                height="128"
-                viewBox="0 0 1024 1024"
-                xmlns="http://www.w3.org/2000/svg"
-                class="icon"
-              >
-                <path
-                  fill="#000000"
-                  d="M842 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 140.3-113.7 254-254 254S258 594.3 258 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 168.7 126.6 307.9 290 327.6V884H326.7c-13.7 0-24.7 14.3-24.7 32v36c0 4.4 2.8 8 6.2 8h407.6c3.4 0 6.2-3.6 6.2-8v-36c0-17.7-11-32-24.7-32H548V782.1c165.3-18 294-158 294-328.1zM512 624c93.9 0 170-75.2 170-168V232c0-92.8-76.1-168-170-168s-170 75.2-170 168v224c0 92.8 76.1 168 170 168zm-94-392c0-50.6 41.9-92 94-92s94 41.4 94 92v224c0 50.6-41.9 92-94 92s-94-41.4-94-92V232z"
-                />
-              </svg>
-              <span class="ppReg">Audio</span>
-            </div>
-            <div class="right">
-              <label class="switch">
-                <input type="checkbox" class="help-me-audio-switch" />
-                <span class="slider round"></span>
-              </label>
-            </div>
-          </div>
-          <button type="button" class="btn help-me-start-record-btn ppSB">
-            Start Recording
-          </button>
-        </div>
+
+        <!-- Bubble control -->
+        <div class="help-me-bubble-control"></div>
       </div>
     </div>
 

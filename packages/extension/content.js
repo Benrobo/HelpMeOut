@@ -6,35 +6,28 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
   }
 });
 
-const $ = (elm) => document.querySelector(elm);
-const $all = (elm) => document.querySelectorAll(elm);
+var $ = (elm) => document.querySelector(elm);
+var $all = (elm) => document.querySelectorAll(elm);
 
 window.addEventListener("DOMContentLoaded", () => {
   insertIframe();
 });
 
 function insertIframe() {
-  //   const embed = document.createElement("embed");
   const mainDiv = document.createElement("div");
   const url = chrome.runtime.getURL("index.html");
 
   mainDiv.setAttribute("class", "help-me-iframe-container hide");
 
   //   tried using embed and iframe, but they couldn't leave up to my requirements
-
-  //   embed.setAttribute("class", "help-me-iframe-container hide");
-  //   embed.setAttribute("allowtransparency", "true");
-  //   embed.setAttribute("WMODE", "transparent");
-  //   embed.width = window.innerWidth;
-  //   embed.height = window.innerHeight;
-  //   embed.src = url;
-  //   embed.style.zIndex = "9000000000000000000";
-  //   embed.style.backgroundColor = "transparency";
-
   fetch(url)
     .then((r) => r.text())
-    .then((d) => {
-      mainDiv.innerHTML = d;
+    .then((data) => {
+      const updatedData = data.replace(
+        "__MSG_@@extension_id__",
+        chrome.runtime.id
+      );
+      mainDiv.innerHTML = updatedData;
       document.body.appendChild(mainDiv);
     });
 }
