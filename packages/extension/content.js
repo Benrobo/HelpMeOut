@@ -14,19 +14,29 @@ window.addEventListener("DOMContentLoaded", () => {
 });
 
 function insertIframe() {
-  const iframe = document.createElement("iframe");
+  //   const embed = document.createElement("embed");
   const mainDiv = document.createElement("div");
   const url = chrome.runtime.getURL("index.html");
 
   mainDiv.setAttribute("class", "help-me-iframe-container hide");
-  iframe.setAttribute("allowtransparency", "true");
-  iframe.width = window.innerWidth;
-  iframe.height = window.innerHeight;
-  iframe.src = url;
-  iframe.style.zIndex = "9000000000000000000";
 
-  mainDiv.append(iframe);
-  document.body.appendChild(mainDiv);
+  //   tried using embed and iframe, but they couldn't leave up to my requirements
+
+  //   embed.setAttribute("class", "help-me-iframe-container hide");
+  //   embed.setAttribute("allowtransparency", "true");
+  //   embed.setAttribute("WMODE", "transparent");
+  //   embed.width = window.innerWidth;
+  //   embed.height = window.innerHeight;
+  //   embed.src = url;
+  //   embed.style.zIndex = "9000000000000000000";
+  //   embed.style.backgroundColor = "transparency";
+
+  fetch(url)
+    .then((r) => r.text())
+    .then((d) => {
+      mainDiv.innerHTML = d;
+      document.body.appendChild(mainDiv);
+    });
 }
 
 function toggleScreenRecord() {

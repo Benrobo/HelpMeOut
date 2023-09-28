@@ -16,7 +16,7 @@
     {
       "matches": ["<all_urls>"],
       "js": ["content.js"],
-      "css": ["./main.css"],
+      "css": ["main.css"],
       "run_at": "document_start"
     }
   ],
@@ -24,7 +24,11 @@
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
-      "resources": ["index.html"],
+      "resources": [
+        "index.html",
+        "assets/images/logos/logo-2.png",
+        "assets/images/logos/logo.png"
+      ],
       "matches": ["<all_urls>"]
     }
   ]

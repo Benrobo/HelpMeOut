@@ -1,10 +1,3 @@
-body {
-  width: var(--width);
-  height: auto;
-  border-radius: 20px;
-  background: #201f22;
-}
-
 :root {
   /* bootstrap overried */
 
@@ -58,7 +51,6 @@ body {
   position: fixed;
   top: 0px;
   left: 0px;
-  background: transparent;
 }
 
 .help-me-iframe-container.show {
@@ -76,8 +68,7 @@ body {
   position: relative;
   padding: 0px;
   display: none;
-  /* background: rgba(0, 0, 0, 0.6); */
-  background: transparent;
+  background: rgba(0, 0, 0, 0.6);
   position: fixed;
   top: 0px;
   left: 0px;
