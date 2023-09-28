@@ -1,0 +1,267 @@
+body {
+  width: var(--width);
+  height: auto;
+  border-radius: 20px;
+  background: #201f22;
+}
+
+:root {
+  /* bootstrap overried */
+
+  --width: 380px;
+  --white-100: #fff;
+  --gray-100: #b6b3c6;
+  --green-100: #348452;
+  --green-200: #5de09e;
+  --green-300: #60e2a3;
+  --dark-100: #26242b;
+  --dark-200: #444;
+  --red-100: #ff0000;
+  --red-200: #ff4741;
+  --blue-100: #120b48;
+  --blue-200: #413c6d;
+}
+
+@font-face {
+  font-family: ppReg;
+  src: url("./assets/fonts/Poppins-Regular.ttf");
+}
+
+@font-face {
+  font-family: ppB;
+  src: url("./assets/fonts/Poppins-Bold.ttf");
+}
+
+@font-face {
+  font-family: ppSB;
+  src: url("./assets/fonts/Poppins-SemiBold.ttf");
+}
+
+.ppReg {
+  font-family: ppReg;
+}
+
+.ppB {
+  font-family: ppB;
+}
+
+.ppSB {
+  font-family: ppSB;
+}
+
+.spinner-border {
+  animation-duration: 0.5s;
+}
+
+.help-me-container {
+  width: 100vw;
+  min-width: 100%;
+  height: 100vh;
+  position: relative;
+  padding: 0px;
+  display: none;
+  background: rgba(0, 0, 0, 0.6);
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+.help-me-container.show {
+  display: flex;
+}
+
+/* help me recording component */
+.help-me-record-comp {
+  width: 300px;
+  max-height: 439px;
+  height: auto;
+  background: var(--white-100);
+  border-radius: 24px;
+  box-shadow: 0px 0px 20px #0000002c;
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}
+
+.help-me-record-comp .heading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  height: auto;
+  gap: 15px;
+}
+
+.help-me-record-comp .heading .top {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: auto;
+  margin: 0px;
+}
+
+.help-me-record-comp .heading .top img {
+  width: 120px;
+}
+
+.help-me-record-comp .heading .top button {
+  border: none;
+  outline: none;
+  background: none;
+}
+
+.help-me-record-comp .heading .top button .help-me-close-icon {
+  width: 30px;
+  height: auto;
+  fill: var(--gray-100);
+  transition: 0.2s ease-in;
+}
+
+.help-me-record-comp .heading .top button .help-me-close-icon:hover {
+  fill: var(--red-200);
+}
+
+.help-me-record-comp .heading .bottom p {
+  color: var(--blue-200);
+  font-size: 13px;
+  font-weight: 100;
+}
+
+/* Recording Controls */
+.help-me-record-comp .help-me-controls {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  padding: 10px 15px;
+  gap: 20px;
+}
+
+/* Camera Control Style */
+.help-me-record-comp .help-me-controls .help-me-camera-control {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.4px solid var(--blue-100);
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.help-me-record-comp .help-me-controls .help-me-camera-control .left {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.help-me-record-comp .help-me-controls .help-me-camera-control .left span {
+  font-size: 13px;
+}
+
+.help-me-record-comp .help-me-controls .help-me-camera-control .left .icon {
+  width: 30px;
+  height: auto;
+}
+
+/* Audio Control Style */
+.help-me-record-comp .help-me-controls .help-me-audio-control {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 1.4px solid var(--blue-100);
+  padding: 10px 15px;
+  border-radius: 12px;
+}
+
+.help-me-record-comp .help-me-controls .help-me-audio-control .left {
+  align-items: center;
+  justify-content: space-between;
+}
+
+.help-me-record-comp .help-me-controls .help-me-audio-control .left span {
+  font-size: 13px;
+}
+
+.help-me-record-comp .help-me-controls .help-me-audio-control .left .icon {
+  width: 30px;
+  height: auto;
+}
+
+/* Control Switch */
+
+.help-me-record-comp .help-me-controls .switch {
+  position: relative;
+  display: inline-block;
+  width: 50px;
+  height: 30px;
+}
+
+/* Hide default HTML checkbox */
+.help-me-record-comp .help-me-controls .switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* The slider */
+.help-me-record-comp .help-me-controls .slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: 0.2s;
+  transition: 0.2s;
+  border-radius: 30px;
+}
+
+.help-me-record-comp .help-me-controls .slider:before {
+  position: absolute;
+  content: "";
+  height: 22px;
+  width: 22px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: 0.4s;
+  transition: 0.4s;
+}
+
+.help-me-record-comp .help-me-controls input:checked + .slider {
+  background-color: var(--blue-100);
+}
+
+.help-me-record-comp .help-me-controls input:focus + .slider {
+  box-shadow: 0 0 1px #2196f3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(20px);
+  -ms-transform: translateX(20px);
+  transform: translateX(20px);
+}
+
+/* Rounded sliders */
+.help-me-record-comp .help-me-controls .help-me-camera-control .slider.round {
+  border-radius: 34px;
+}
+
+.help-me-record-comp .help-me-controls .slider.round:before {
+  border-radius: 50%;
+}
+
+/* Start Recording Button */
+.help-me-record-comp .help-me-start-record-btn {
+  width: 100%;
+  background: var(--blue-100);
+  padding: 12px 20px;
+  color: var(--white-100);
+  border-radius: 12px;
+  transition: 0.2s ease-in-out;
+}
+
+.help-me-record-comp .help-me-start-record-btn:hover {
+  background: var(--blue-200);
+  color: #fff;
+}
