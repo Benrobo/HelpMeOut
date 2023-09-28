@@ -53,12 +53,20 @@ body {
   animation-duration: 0.5s;
 }
 
-.help-me-iframe {
+.help-me-iframe-container {
   z-index: 999999999999999;
   position: fixed;
   top: 0px;
   left: 0px;
   background: transparent;
+}
+
+.help-me-iframe-container.show {
+  display: flex;
+}
+
+.help-me-iframe-container.hide {
+  display: none;
 }
 
 .help-me-container {
