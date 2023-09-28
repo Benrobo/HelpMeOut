@@ -8,12 +8,15 @@ chrome.runtime.onMessage.addListener(function (msg, sender) {
 
 function insertIframe() {
   const iframe = document.createElement("iframe");
+  const mainDiv = document.createElement("div");
   const url = chrome.runtime.getURL("index.html");
-  iframe.setAttribute("class", "help-me-iframe visible");
+  mainDiv.setAttribute("class", "help-me-iframe show");
+  iframe.setAttribute("allowtransparency", "true");
+  iframe.width = window.innerWidth;
+  iframe.height = window.innerHeight;
   iframe.src = url;
-  iframe.style.position = "fixed";
-  iframe.style.top = "0px";
-  iframe.style.right = "0px";
   iframe.style.zIndex = "9000000000000000000";
-  //   document.body.appendChild(iframe);
+
+  mainDiv.append(iframe);
+  document.body.appendChild(mainDiv);
 }
