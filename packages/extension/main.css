@@ -30,6 +30,12 @@
   src: url("chrome-extension://__MSG_@@extension_id__/assets/fonts/Poppins-SemiBold.ttf");
 }
 
+body {
+  width: 100vw;
+  height: 100vh;
+  overflow-x: hidden;
+}
+
 .hmo-d-flex {
   display: flex;
 }
@@ -74,8 +80,8 @@
 }
 
 .help-me-container {
-  width: 100vw;
-  min-width: 100%;
+  width: 0px;
+  min-width: 0px;
   height: 100vh;
   position: relative;
   padding: 0px;
@@ -261,8 +267,8 @@
   background-color: var(--hmo-blue-100);
 }
 
-.help-me-record-comp .help-me-controls input:focus + .slider {
-  box-shadow: 0 0 1px #2196f3;
+.help-me-record-comp .help-me-controls input:not(:checked) + .slider {
+  background-color: #ccc;
 }
 
 input:checked + .slider:before {
@@ -388,6 +394,14 @@ input:checked + .slider:before {
   color: #fff;
 }
 
+.help-me-bubble-control .right .hmo-bubble-counter .hmo-animate-pulse {
+  opacity: 0.2;
+}
+
+.help-me-bubble-control .right .hmo-bubble-counter .hmo-animate-pulse.started {
+  opacity: 1;
+}
+
 .help-me-bubble-control .right .bubble-media-controls {
   display: flex;
   align-items: center;
@@ -418,6 +432,27 @@ input:checked + .slider:before {
   cursor: pointer;
   margin-bottom: 4px;
   transform: scale(0.95);
+}
+
+.help-me-bubble-control
+  .right
+  .bubble-media-controls
+  .bubble-controls
+  button.disabled {
+  background: var(--hmo-gray-200);
+  opacity: 0.7;
+  color: #fff;
+  user-select: none;
+  cursor: not-allowed;
+}
+
+.help-me-bubble-control
+  .right
+  .bubble-media-controls
+  .bubble-controls
+  button.bubble-stop-btn
+  > .icon {
+  fill: var(--hmo-red-200);
 }
 
 .help-me-bubble-control
