@@ -358,6 +358,7 @@ input:checked + .slider:before {
   user-select: none;
   cursor: move;
   background-size: cover;
+  object-fit: cover;
 }
 
 .help-me-bubble-control .left .hmo-avatar-img.removed {

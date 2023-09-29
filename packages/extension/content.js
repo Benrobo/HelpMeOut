@@ -23,9 +23,11 @@ window.addEventListener("DOMContentLoaded", async () => {
   // Draggable
   var container = $("body");
   var dragElement = $(".help-me-bubble-user-img");
+  var dragBubble = $(".help-me-bubble-main-controls");
   var affectedElement = $(".help-me-bubble-control");
   // initialize drag
   new Draggable(dragElement, affectedElement, container);
+  new Draggable(dragBubble, affectedElement, container);
 
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
@@ -132,12 +134,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   // update audio and camera switch input checked state
   HMOCameraSwitch.toggleAttribute("checked", !!cameraState);
   HMOAudioSwitch.toggleAttribute("checked", !!audioState);
+  cameraState ? showCam() : hideCam();
 
   // handle camera and audio toggle states
   HMOCameraSwitch.addEventListener("change", (e) => {
     localStorage.setItem("@hmo_use_camera", e.target.checked);
     cameraState = e.target.checked;
     cameraBtn.innerHTML = e.target.checked ? cameraOnIcon : cameraOffIcon;
+    e.target.checked ? showCam() : hideCam();
   });
   HMOAudioSwitch.addEventListener("change", (e) => {
     localStorage.setItem("@hmo_use_audio", e.target.checked);
@@ -177,6 +181,44 @@ window.addEventListener("DOMContentLoaded", async () => {
   HMOBubbCounter.innerHTML = `${countHr > 10 ? countHr : "0" + countHr}:${
     countMin > 10 ? countMin : "0" + countMin
   }:${countSec > 10 ? countSec : "0" + countSec}`;
+
+  // handle users webcam
+  function stopCam() {
+    if (!HMOBubbUserVideo) return;
+    let stream = HMOBubbUserVideo.srcObject;
+    let tracks = stream?.getTracks();
+    typeof tracks !== "undefined" && tracks?.forEach((track) => track.stop());
+    HMOBubbUserVideo.srcObject = null;
+  }
+
+  function startCam() {
+    if (!HMOBubbUserVideo) return;
+    if (navigator.mediaDevices.getUserMedia) {
+      navigator.mediaDevices
+        .getUserMedia({ video: true, audio: audioState })
+        .then((stream) => {
+          HMOBubbUserVideo.srcObject = stream;
+          HMOBubbUserVideo.addEventListener("loadedmetadata", () => {
+            HMOBubbUserVideo.play();
+          });
+        })
+        .catch(function (error) {
+          console.log("Something went wrong!");
+        });
+    }
+  }
+
+  function hideCam() {
+    HMOBubbUserVideo.classList.add("hide");
+    HMOBubbUserVideo.classList.remove("show");
+    stopCam();
+  }
+
+  function showCam() {
+    HMOBubbUserVideo.classList.remove("hide");
+    HMOBubbUserVideo.classList.add("show");
+    startCam();
+  }
 });
 
 function insertIframe() {
