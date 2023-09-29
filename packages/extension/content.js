@@ -271,6 +271,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       HMOBubbCounterAnim.classList.add("started");
       HMOStartRecordingBtn.setAttribute("disabled", true);
       HMOStartRecordingBtn.classList.add("disabled");
+      HMORecorderComp.classList.remove("show");
       HMORecorderComp.classList.add("hide");
     }
   };
@@ -283,6 +284,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     const formData = new FormData();
     formData.append("videoFile", blob);
     try {
+      HMOSaveVideo.innerHTML = "Saving...";
       // Send the FormData in a POST request
       const url = `${API_BASE_URL}/video/save`;
       const req = await fetch(url, {
@@ -290,9 +292,14 @@ window.addEventListener("DOMContentLoaded", async () => {
         body: formData,
       });
       const result = await req.json();
-
-      console.log(result);
+      if (req.status !== 200) {
+        window.alert(result?.message);
+        return;
+      }
+      HMOSaveVideo.innerHTML = "Save Video";
     } catch (e) {
+      HMOSaveVideo.innerHTML = "Save Video";
+      window.alert(`Something went wrong.`);
       console.log(`Something went wrong saving video: ${e}`);
     }
   };
