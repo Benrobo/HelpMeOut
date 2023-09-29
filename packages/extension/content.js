@@ -81,6 +81,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   var countSec = 0;
   var countHr = 0;
   var isTimerPaused = false;
+  var videoOff = false;
+  var audioOff = false;
   var timerInterval;
   var shouldRestart = false;
   var counter = bubbleCounter();
@@ -92,7 +94,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     ? "video/webm; codecs=vp9"
     : "video/webm";
   var mediaRecorder = null;
-  var mediaTracks = null;
 
   // bubble counter
   timerInterval = setInterval(() => {
@@ -180,11 +181,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     cameraState = e.target.checked;
     cameraBtn.innerHTML = e.target.checked ? cameraOnIcon : cameraOffIcon;
     e.target.checked ? showCam() : hideCam();
+    videoOff = e.target.checked;
   });
   HMOAudioSwitch.addEventListener("change", (e) => {
     localStorage.setItem("@hmo_use_audio", e.target.checked);
     audioState = e.target.checked;
     audioBtn.innerHTML = e.target.checked ? audioOnIcon : audioOffIcon;
+    audioOff = e.target.checked;
   });
 
   // update stop button if recording hasn't started
@@ -213,6 +216,29 @@ window.addEventListener("DOMContentLoaded", async () => {
   HMOCloseBtn.onclick = () => {
     HMOContainer.classList.remove("show");
     HMOContainer.classList.add("hide");
+  };
+
+  //   toggle audio and video output
+  audioBtn.onclick = () => {
+    if (!audioOff) {
+      audioOff = true;
+      audioBtn.innerHTML = audioOnIcon;
+    } else {
+      audioOff = false;
+      audioBtn.innerHTML = audioOffIcon;
+    }
+  };
+
+  cameraBtn.onclick = () => {
+    if (!videoOff) {
+      videoOff = true;
+      cameraBtn.innerHTML = cameraOnIcon;
+      showCam();
+    } else {
+      videoOff = false;
+      cameraBtn.innerHTML = cameraOffIcon;
+      hideCam();
+    }
   };
 
   // counter controls counter
@@ -319,15 +345,6 @@ window.addEventListener("DOMContentLoaded", async () => {
     // reload page to reset all state
     window.location.reload();
   };
-
-  //   convert blob to base64
-  function blobToBase64(blob) {
-    return new Promise((resolve, _) => {
-      const reader = new FileReader();
-      reader.onloadend = () => resolve(reader.result);
-      reader.readAsDataURL(blob);
-    });
-  }
 
   // start recording button
   async function startRecording() {

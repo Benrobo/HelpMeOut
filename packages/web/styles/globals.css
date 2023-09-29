@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth !important;
+}
+
+body {
+  width: 100%;
+  height: 100vh;
+  overflow-x: hidden;
+  scroll-behavior: smooth;
+}
+
+.z-up {
+  z-index: 100;
+}
+
+.z-down {
+  z-index: -2;
+}
+
+.z-upper {
+  z-index: 50;
+  /* color: #2a282d38; */
+}
+
+.hideScrollBar::-webkit-scrollbar {
+  width: 1px;
+}
+
+.spin {
+  animation: 0.5s spin linear infinite;
+}
+
+#showccial-spinner {
+  animation: spinner 0.5s linear infinite;
+  border-radius: 30px;
+  /* transition: .2s ease; */
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

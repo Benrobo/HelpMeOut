@@ -3,6 +3,7 @@ const shortId = require("short-uuid");
 
 async function saveVideo(req, res) {
   try {
+    console.log(req.file);
     const buffer = req?.file?.buffer;
     if (typeof buffer === "undefined") {
       res.status(400).json({ message: "Video buffer is missing." });

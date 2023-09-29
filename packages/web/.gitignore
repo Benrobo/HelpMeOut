@@ -1,6 +1,4 @@
 
-/node_modules
+/.next
 
-# packages node_modules
-/packages/**/node_modules
-/packages/**/node_modules
+.next
