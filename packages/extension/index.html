@@ -16,7 +16,7 @@
     <div class="hmo-root-shadow-dom">
       <div class="help-me-container show">
         <!-- HelpMe Recorder Component -->
-        <div class="help-me-record-comp">
+        <div class="help-me-record-comp hide">
           <div class="heading hmo-d-flex py-4 px-4">
             <div class="top">
               <img
@@ -106,7 +106,7 @@
         </div>
 
         <!-- Bubble control -->
-        <div class="help-me-bubble-control" style="display: flex !important">
+        <div class="help-me-bubble-control hide">
           <div class="left help-me-bubble-user-img">
             <div
               class="hmo-avatar-img hide"
@@ -118,7 +118,9 @@
           </div>
           <div class="right help-me-bubble-main-controls">
             <div class="hmo-bubble-counter">
-              <span class="counter-txt hmo-bubble-counter-txt ppSB"></span>
+              <span class="counter-txt hmo-bubble-counter-txt ppSB"
+                >00:00:00</span
+              >
               <div class="hmo-animate-pulse"></div>
             </div>
             <div class="bubble-media-controls">
@@ -126,6 +128,7 @@
                 <button
                   class="bubble-pause-btn bubble-media-control"
                   name="pause"
+                  data-name="pause"
                 >
                   <svg
                     width="128"
@@ -238,6 +241,8 @@
             </div>
           </div>
         </div>
+
+        <!-- Preview Video -->
       </div>
     </div>
 

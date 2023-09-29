@@ -31,6 +31,8 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
+  var HMORecorderComp = $(".help-me-record-comp");
+  var HMORecorderBubbComp = $(".help-me-bubble-control");
   var HMOCloseBtn = $(".help-me-close-btn");
   var HMOCameraSwitch = $(".help-me-camera-switch");
   var HMOAudioSwitch = $(".help-me-audio-switch");
@@ -70,6 +72,34 @@ window.addEventListener("DOMContentLoaded", async () => {
   var countMin = 0;
   var countSec = 0;
   var countHr = 0;
+  var isTimerPaused = false;
+  var timerInterval;
+  var shouldRestart = false;
+  var counter = bubbleCounter();
+
+  // recorder data
+  var recordedChunks = [];
+  var recordedBlob = "";
+  var recordedBlobUrl = "";
+  var mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+    ? "video/webm; codecs=vp9"
+    : "video/webm";
+  var mediaRecorder = null;
+
+  // bubble counter
+  timerInterval = setInterval(() => {
+    if (isTimerPaused || !startedRecording) return;
+    countSec += 1;
+    if (countSec === 60) {
+      countMin += 1;
+      countSec = 0;
+    }
+    if (countMin === 60) {
+      countHr += 1;
+      countSec = 0;
+    }
+    updateCounterCont(countHr, countMin, countSec);
+  }, 500);
 
   // media icons
   var playIcon = `
@@ -177,10 +207,142 @@ window.addEventListener("DOMContentLoaded", async () => {
     HMOContainer.classList.add("hide");
   };
 
+  // start recording button
+  async function startRecording() {
+    try {
+      let stream = await navigator.mediaDevices.getDisplayMedia({
+        video: true,
+      });
+      if (mediaRecorder === null) {
+        mediaRecorder = new MediaRecorder(stream, {
+          mimeType: mime,
+        });
+        mediaRecorder.addEventListener("dataavailable", function (e) {
+          recordedChunks.push(e.data);
+        });
+
+        mediaRecorder.addEventListener("stop", function () {
+          let blob = new Blob(recordedChunks, {
+            type: recordedChunks[0].type,
+          });
+          recordedBlob = blob;
+          recordedBlobUrl = URL.createObjectURL(blob);
+          stream.getTracks()[0].stop();
+        });
+
+        mediaRecorder.start();
+        return true;
+      }
+    } catch (e) {
+      console.log(`error starting recorder`);
+      return false;
+    }
+  }
+
+  HMOStartRecordingBtn.onclick = async () => {
+    if (startedRecording) return;
+    const shouldStart = await startRecording();
+    if (shouldStart) {
+      startedRecording = true;
+      pauseBtn.classList.remove("disabled");
+      stopBtn.classList.remove("disabled");
+      HMOBubbCounterAnim.classList.add("started");
+      HMOStartRecordingBtn.setAttribute("disabled", true);
+      HMOStartRecordingBtn.classList.add("disabled");
+    }
+  };
+
+  function updatePauseBtnUI(isPaused = true) {
+    if (isPaused) {
+      pauseBtn.innerHTML = playIcon;
+      pauseBtn.setAttribute("data-name", "play");
+    } else {
+      pauseBtn.innerHTML = `
+            <svg
+                    width="128"
+                    height="128"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="icon"
+                  >
+                    <path
+                      fill=""
+                      d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z"
+                    />
+                  </svg>
+        `;
+      pauseBtn.setAttribute("data-name", "pause");
+    }
+  }
+
+  // counter controls counter
+  pauseBtn.onclick = () => {
+    const dataset = pauseBtn.getAttribute("data-name");
+    if (dataset === "pause") {
+      updatePauseBtnUI(true);
+      counter.pause();
+    } else {
+      updatePauseBtnUI(false);
+      counter.play();
+    }
+
+    // pause the media stream
+    if (mediaRecorder.recording) {
+      mediaRecorder.pause();
+    }
+  };
+  stopBtn.onclick = () => {
+    counter.stop();
+    startedRecording = false;
+    stopBtn.classList.add("disabled");
+    pauseBtn.classList.add("disabled");
+    HMOStartRecordingBtn.classList.remove("disabled");
+    HMOStartRecordingBtn.removeAttribute("disabled");
+    shouldRestart = true;
+
+    // stop recorder
+    mediaRecorder.stop();
+
+    // hide recorder ui component
+    hideRecorderComp();
+    // save recording to storage
+  };
+
   // update count down
-  HMOBubbCounter.innerHTML = `${countHr > 10 ? countHr : "0" + countHr}:${
-    countMin > 10 ? countMin : "0" + countMin
-  }:${countSec > 10 ? countSec : "0" + countSec}`;
+  function updateCounterCont(hr, min, sec) {
+    HMOBubbCounter.innerHTML = `${hr > 9 ? hr : "0" + hr}:${
+      min > 9 ? min : "0" + min
+    }:${sec > 9 ? sec : "0" + sec}`;
+  }
+
+  //  counter
+  function bubbleCounter() {
+    return {
+      pause: () => {
+        isTimerPaused = true;
+      },
+      play: () => {
+        isTimerPaused = false;
+      },
+      stop: () => {
+        isTimerPaused = true;
+        min = 0;
+        sec = 0;
+        hr = 0;
+        updateCounterCont(hr, min, sec);
+        clearInterval(timerInterval);
+      },
+    };
+  }
+
+  //   hide recorder UI component
+  function hideRecorderComp() {
+    HMORecorderBubbComp.classList.remove("show");
+    HMORecorderComp.classList.remove("show");
+
+    HMORecorderBubbComp.classList.add("hide");
+    HMORecorderComp.classList.add("hide");
+  }
 
   // handle users webcam
   function stopCam() {
