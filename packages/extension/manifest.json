@@ -27,7 +27,10 @@
       "resources": [
         "index.html",
         "assets/images/logos/logo-2.png",
-        "assets/images/logos/logo.png"
+        "assets/images/logos/logo.png",
+        "assets/fonts/Poppins-Bold.ttf",
+        "assets/fonts/Poppins-Regular.ttf",
+        "assets/fonts/Poppins-SemiBold.ttf"
       ],
       "matches": ["<all_urls>"]
     }

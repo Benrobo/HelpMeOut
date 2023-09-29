@@ -13,10 +13,11 @@ window.addEventListener("DOMContentLoaded", () => {
   insertIframe();
 
   setTimeout(() => {
-    var container = document.querySelector(".help-me-container");
-    var element = document.querySelector(".help-me-bubble-control");
+    var container = $(".help-me-container");
+    var dragElement = $(".help-me-bubble-user-img");
+    var affectedElement = $(".help-me-bubble-control");
     // initialize drag
-    new Draggable(element, container);
+    new Draggable(dragElement, affectedElement, container);
   }, 2000);
 });
 
@@ -50,7 +51,7 @@ function toggleScreenRecord() {
   }
 }
 
-function Draggable(draggableElement, container) {
+function Draggable(draggableElement, affectedElement, container) {
   let isDragging = false;
   let offsetX, offsetY;
 
@@ -59,7 +60,7 @@ function Draggable(draggableElement, container) {
     const rect = draggableElement.getBoundingClientRect();
     offsetX = e.clientX - rect.left;
     offsetY = e.clientY - rect.top;
-    draggableElement.style.zIndex = "1";
+    affectedElement.style.zIndex = "1";
   });
 
   document.addEventListener("mousemove", (e) => {
@@ -75,13 +76,13 @@ function Draggable(draggableElement, container) {
       x = Math.max(0, Math.min(x, maxX));
       y = Math.max(0, Math.min(y, maxY));
 
-      draggableElement.style.left = x + "px";
-      draggableElement.style.top = y + "px";
+      affectedElement.style.left = x + "px";
+      affectedElement.style.top = y + "px";
     }
   });
 
   document.addEventListener("mouseup", () => {
     isDragging = false;
-    draggableElement.style.zIndex = "0";
+    affectedElement.style.zIndex = "0";
   });
 }
