@@ -28,6 +28,9 @@ window.addEventListener("DOMContentLoaded", async () => {
   new Draggable(dragElement, affectedElement, container);
   new Draggable(dragBubble, affectedElement, container);
 
+  //   backend api url
+  var API_BASE_URL = `http://localhost:8080/api`;
+
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
   var HMORecorderComp = $(".help-me-record-comp");
@@ -85,8 +88,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   // recorder data
   var recordedChunks = [];
   var recordedBlobUrl = "";
-  var mime = MediaRecorder.isTypeSupported("video/mp4; codecs=vp9")
-    ? "video/mp4; codecs=vp9"
+  var mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
+    ? "video/webm; codecs=vp9"
     : "video/webm";
   var mediaRecorder = null;
   var mediaTracks = null;
@@ -273,8 +276,25 @@ window.addEventListener("DOMContentLoaded", async () => {
   };
 
   //   save video
-  HMOSaveVideo.onclick = () => {
-    console.log(recordedBlobUrl);
+  HMOSaveVideo.onclick = async () => {
+    const blob = new Blob(recordedChunks, {
+      type: recordedChunks[0].type,
+    });
+    const formData = new FormData();
+    formData.append("videoFile", blob);
+    try {
+      // Send the FormData in a POST request
+      const url = `${API_BASE_URL}/video/save`;
+      const req = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
+      const result = await req.json();
+
+      console.log(result);
+    } catch (e) {
+      console.log(`Something went wrong saving video: ${e}`);
+    }
   };
 
   // cancel video
@@ -292,6 +312,15 @@ window.addEventListener("DOMContentLoaded", async () => {
     // reload page to reset all state
     window.location.reload();
   };
+
+  //   convert blob to base64
+  function blobToBase64(blob) {
+    return new Promise((resolve, _) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result);
+      reader.readAsDataURL(blob);
+    });
+  }
 
   // start recording button
   async function startRecording() {
