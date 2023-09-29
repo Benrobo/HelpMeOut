@@ -18,7 +18,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   insertIframe();
 
   // wait 2sec before continuing
-  await sleep(1);
+  await sleep(2);
 
   // Draggable
   var container = $("body");

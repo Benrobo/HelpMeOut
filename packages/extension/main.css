@@ -190,6 +190,10 @@ body {
   font-size: 13px;
 }
 
+.help-me-record-comp .help-me-controls .left span {
+  color: var(--hmo-blue-100);
+}
+
 .help-me-record-comp .help-me-controls .help-me-camera-control .left .icon {
   width: 30px;
   height: auto;
@@ -432,6 +436,16 @@ input:checked + .slider:before {
   cursor: pointer;
   margin-bottom: 4px;
   transform: scale(0.95);
+  background: #fff;
+}
+
+.help-me-bubble-control
+  .right
+  .bubble-media-controls
+  .bubble-controls
+  button
+  > .icon {
+  color: var(--hmo-blue-100);
 }
 
 .help-me-bubble-control
