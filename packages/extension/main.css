@@ -534,6 +534,97 @@ input:checked + .slider:before {
   height: 20px;
 }
 
+/* Preview Video */
+.hmo-preview-video {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  background: rgba(0, 0, 0, 0.9);
+}
+
+.hmo-preview-video.show {
+  display: flex;
+}
+
+.hmo-preview-video.hide {
+  display: none;
+}
+
+.hmo-preview-video .video-card {
+  width: 100%;
+  max-width: 600px;
+  height: auto;
+  display: flex;
+  align-items: center;
+  justify-items: flex-start;
+  flex-direction: column;
+  margin: 0px auto;
+  padding: 10px;
+  border-radius: 20px;
+}
+
+.hmo-preview-video .video-card video {
+  width: 100%;
+  max-width: 600px;
+  /* height: 500px; */
+  border: 8px solid var(--hmo-gray-200);
+  border-radius: 20px;
+}
+
+.hmo-preview-video .video-card .video-footer {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 10px;
+  gap: 10px;
+}
+
+.hmo-preview-video .video-card .video-footer button {
+  padding: 10px 20px;
+  border-radius: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: none;
+  outline: none;
+  transition: all 0.2s ease-in-out;
+  cursor: pointer;
+  border: 5px solid transparent;
+  color: #fff;
+}
+
+.hmo-preview-video .video-card .video-footer button .icon {
+  width: 30px;
+  height: 30px;
+  padding: 3px;
+  transform: scale(0.9);
+  fill: #fff;
+}
+
+.hmo-preview-video .video-card .video-footer button.cancel-btn {
+  background: var(--hmo-red-200);
+}
+
+.hmo-preview-video .video-card .video-footer button.save-btn {
+  background: var(--hmo-blue-100);
+}
+
+.hmo-preview-video .video-card .video-footer button.cancel-btn:active,
+.hmo-preview-video .video-card .video-footer button.cancel-btn:focus {
+  border: 5px solid rgba(224, 2, 2, 0.9);
+}
+
+.hmo-preview-video .video-card .video-footer button.save-btn:active,
+.hmo-preview-video .video-card .video-footer button.save-btn:focus {
+  border: 5px solid var(--hmo-blue-200);
+}
+
 @keyframes hmo-animate-pulse {
   0% {
     box-shadow: 0 0 0 0px rgba(224, 2, 2, 0.7);

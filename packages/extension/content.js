@@ -1,4 +1,3 @@
-console.log("Content script is running.");
 chrome.runtime.onMessage.addListener(function (msg, sender) {
   if (msg == "open_recorder") {
     console.log("MESSAGE RECEIVED");
@@ -37,6 +36,12 @@ window.addEventListener("DOMContentLoaded", async () => {
   var HMOCameraSwitch = $(".help-me-camera-switch");
   var HMOAudioSwitch = $(".help-me-audio-switch");
   var HMOStartRecordingBtn = $(".help-me-start-record-btn");
+
+  // preview video element
+  var HMOPreviewVideoContainer = $(".hmo-preview-video");
+  var HMOPreviewVideo = $(".hmo-preview-video-tag");
+  var HMOSaveVideo = $(".hmo-save-video");
+  var HMOCancelVideo = $(".hmo-cancel-video");
 
   // bubbe controls
   var HMOBubbUserImg = $(".hmo-avatar-img");
@@ -79,12 +84,12 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   // recorder data
   var recordedChunks = [];
-  var recordedBlob = "";
   var recordedBlobUrl = "";
-  var mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
-    ? "video/webm; codecs=vp9"
+  var mime = MediaRecorder.isTypeSupported("video/mp4; codecs=vp9")
+    ? "video/mp4; codecs=vp9"
     : "video/webm";
   var mediaRecorder = null;
+  var mediaTracks = null;
 
   // bubble counter
   timerInterval = setInterval(() => {
@@ -99,7 +104,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       countSec = 0;
     }
     updateCounterCont(countHr, countMin, countSec);
-  }, 500);
+  }, 1000);
 
   // media icons
   var playIcon = `
@@ -207,6 +212,87 @@ window.addEventListener("DOMContentLoaded", async () => {
     HMOContainer.classList.add("hide");
   };
 
+  // counter controls counter
+  pauseBtn.onclick = () => {
+    const dataset = pauseBtn.getAttribute("data-name");
+    if (dataset === "pause") {
+      updatePauseBtnUI(true);
+      counter.pause();
+    } else {
+      updatePauseBtnUI(false);
+      counter.play();
+    }
+
+    // pause and resume recording
+    if (mediaRecorder.state === "recording") {
+      mediaRecorder.pause();
+    } else if (mediaRecorder.state === "paused") {
+      mediaRecorder.resume();
+    }
+  };
+  stopBtn.onclick = async () => {
+    counter.stop();
+    startedRecording = false;
+    stopBtn.classList.add("disabled");
+    pauseBtn.classList.add("disabled");
+    HMOStartRecordingBtn.classList.remove("disabled");
+    HMOStartRecordingBtn.removeAttribute("disabled");
+    shouldRestart = true;
+
+    // stop recorder
+    mediaRecorder.stop();
+
+    // display preview video
+    await sleep(1);
+    HMOPreviewVideoContainer.classList.remove("hide");
+    HMOPreviewVideoContainer.classList.add("show");
+    HMOPreviewVideo.src = recordedBlobUrl;
+
+    // show the record component
+    HMORecorderComp.classList.remove("hide");
+    HMORecorderComp.classList.add("show");
+
+    // hide recorder ui component
+    hideRecorderComp();
+    // save recording to storage
+  };
+
+  // start recording button
+  HMOStartRecordingBtn.onclick = async () => {
+    if (startedRecording) return;
+    const shouldStart = await startRecording();
+    if (shouldStart) {
+      startedRecording = true;
+      pauseBtn.classList.remove("disabled");
+      stopBtn.classList.remove("disabled");
+      HMOBubbCounterAnim.classList.add("started");
+      HMOStartRecordingBtn.setAttribute("disabled", true);
+      HMOStartRecordingBtn.classList.add("disabled");
+      HMORecorderComp.classList.add("hide");
+    }
+  };
+
+  //   save video
+  HMOSaveVideo.onclick = () => {
+    console.log(recordedBlobUrl);
+  };
+
+  // cancel video
+  HMOCancelVideo.onclick = () => {
+    HMOPreviewVideoContainer.classList.remove("show");
+    HMOPreviewVideoContainer.classList.add("hide");
+
+    // hide main HMO RECORDING CONTAINER
+    HMOContainer.classList.remove("show");
+    HMOContainer.classList.add("hide");
+
+    // hide main frame container
+    toggleScreenRecord();
+
+    // reload page to reset all state
+    window.location.reload();
+  };
+
   // start recording button
   async function startRecording() {
     try {
@@ -225,7 +311,6 @@ window.addEventListener("DOMContentLoaded", async () => {
           let blob = new Blob(recordedChunks, {
             type: recordedChunks[0].type,
           });
-          recordedBlob = blob;
           recordedBlobUrl = URL.createObjectURL(blob);
           stream.getTracks()[0].stop();
         });
@@ -238,19 +323,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       return false;
     }
   }
-
-  HMOStartRecordingBtn.onclick = async () => {
-    if (startedRecording) return;
-    const shouldStart = await startRecording();
-    if (shouldStart) {
-      startedRecording = true;
-      pauseBtn.classList.remove("disabled");
-      stopBtn.classList.remove("disabled");
-      HMOBubbCounterAnim.classList.add("started");
-      HMOStartRecordingBtn.setAttribute("disabled", true);
-      HMOStartRecordingBtn.classList.add("disabled");
-    }
-  };
 
   function updatePauseBtnUI(isPaused = true) {
     if (isPaused) {
@@ -274,39 +346,6 @@ window.addEventListener("DOMContentLoaded", async () => {
       pauseBtn.setAttribute("data-name", "pause");
     }
   }
-
-  // counter controls counter
-  pauseBtn.onclick = () => {
-    const dataset = pauseBtn.getAttribute("data-name");
-    if (dataset === "pause") {
-      updatePauseBtnUI(true);
-      counter.pause();
-    } else {
-      updatePauseBtnUI(false);
-      counter.play();
-    }
-
-    // pause the media stream
-    if (mediaRecorder.recording) {
-      mediaRecorder.pause();
-    }
-  };
-  stopBtn.onclick = () => {
-    counter.stop();
-    startedRecording = false;
-    stopBtn.classList.add("disabled");
-    pauseBtn.classList.add("disabled");
-    HMOStartRecordingBtn.classList.remove("disabled");
-    HMOStartRecordingBtn.removeAttribute("disabled");
-    shouldRestart = true;
-
-    // stop recorder
-    mediaRecorder.stop();
-
-    // hide recorder ui component
-    hideRecorderComp();
-    // save recording to storage
-  };
 
   // update count down
   function updateCounterCont(hr, min, sec) {
@@ -406,11 +445,10 @@ function toggleScreenRecord() {
   const mainDiv = $(".help-me-iframe-container");
   if (mainDiv.classList.contains("show")) {
     mainDiv.classList.remove("show");
-    mainDiv.classList.add("hide");
   } else {
-    mainDiv.classList.remove("hide");
     mainDiv.classList.add("show");
   }
+  mainDiv.classList.toggle("hide");
 }
 
 function Draggable(draggableElement, affectedElement, container) {

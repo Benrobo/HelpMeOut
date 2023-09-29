@@ -13,236 +13,241 @@
     /> -->
   </head>
   <body>
-    <div class="hmo-root-shadow-dom">
-      <div class="help-me-container show">
-        <!-- HelpMe Recorder Component -->
-        <div class="help-me-record-comp hide">
-          <div class="heading hmo-d-flex py-4 px-4">
-            <div class="top">
-              <img
-                src="chrome-extension://__MSG_@@extension_id__/assets/images/logos/logo-2.png"
-                width="100"
-                alt=""
-                id="help-me-image-extension-logo"
-              />
-              <button class="help-me-close-btn">
-                <svg
-                  width="80px"
-                  height="80px"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="help-me-close-icon icon"
-                >
-                  <g fill="">
-                    <path
-                      d="M16.34 9.322a1 1 0 1 0-1.364-1.463l-2.926 2.728L9.322 7.66A1 1 0 0 0 7.86 9.024l2.728 2.926l-2.927 2.728a1 1 0 1 0 1.364 1.462l2.926-2.727l2.728 2.926a1 1 0 1 0 1.462-1.363l-2.727-2.926l2.926-2.728Z"
-                    />
-                    <path
-                      fill-rule="evenodd"
-                      d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12Zm11 9a9 9 0 1 1 0-18a9 9 0 0 1 0 18Z"
-                      clip-rule="evenodd"
-                    />
-                  </g>
-                </svg>
-              </button>
+    <div class="help-me-container show">
+      <!-- HelpMe Recorder Component -->
+      <div class="help-me-record-comp show">
+        <div class="heading hmo-d-flex py-4 px-4">
+          <div class="top">
+            <img
+              src="chrome-extension://__MSG_@@extension_id__/assets/images/logos/logo-2.png"
+              width="100"
+              alt=""
+              id="help-me-image-extension-logo"
+            />
+            <button class="help-me-close-btn">
+              <svg
+                width="80px"
+                height="80px"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                class="help-me-close-icon icon"
+              >
+                <g fill="">
+                  <path
+                    d="M16.34 9.322a1 1 0 1 0-1.364-1.463l-2.926 2.728L9.322 7.66A1 1 0 0 0 7.86 9.024l2.728 2.926l-2.927 2.728a1 1 0 1 0 1.364 1.462l2.926-2.727l2.728 2.926a1 1 0 1 0 1.462-1.363l-2.727-2.926l2.926-2.728Z"
+                  />
+                  <path
+                    fill-rule="evenodd"
+                    d="M1 12C1 5.925 5.925 1 12 1s11 4.925 11 11s-4.925 11-11 11S1 18.075 1 12Zm11 9a9 9 0 1 1 0-18a9 9 0 0 1 0 18Z"
+                    clip-rule="evenodd"
+                  />
+                </g>
+              </svg>
+            </button>
+          </div>
+          <div class="bottom">
+            <p class="ppReg">
+              This extension helps you record and share help videos with ease.
+            </p>
+          </div>
+        </div>
+        <div class="help-me-controls">
+          <div class="help-me-camera-control">
+            <div class="left hmo-d-flex gap-2">
+              <svg
+                width="128"
+                height="128"
+                viewBox="0 0 32 32"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+              >
+                <path
+                  fill=""
+                  d="M21 26H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v4.06l5.42-3.87A1 1 0 0 1 30 9v14a1 1 0 0 1-1.58.81L23 19.94V24a2 2 0 0 1-2 2ZM4 8v16h17v-6a1 1 0 0 1 1.58-.81L28 21.06V10.94l-5.42 3.87A1 1 0 0 1 21 14V8Z"
+                />
+              </svg>
+              <span class="ppReg">Camera</span>
             </div>
-            <div class="bottom">
-              <p class="ppReg">
-                This extension helps you record and share help videos with ease.
-              </p>
+            <div class="right">
+              <label class="switch">
+                <input type="checkbox" class="help-me-camera-switch" />
+                <span class="slider round"></span>
+              </label>
             </div>
           </div>
-          <div class="help-me-controls">
-            <div class="help-me-camera-control">
-              <div class="left hmo-d-flex gap-2">
+          <div class="help-me-audio-control">
+            <div class="left hmo-d-flex gap-2">
+              <svg
+                width="128"
+                height="128"
+                viewBox="0 0 1024 1024"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+              >
+                <path
+                  fill="#000000"
+                  d="M842 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 140.3-113.7 254-254 254S258 594.3 258 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 168.7 126.6 307.9 290 327.6V884H326.7c-13.7 0-24.7 14.3-24.7 32v36c0 4.4 2.8 8 6.2 8h407.6c3.4 0 6.2-3.6 6.2-8v-36c0-17.7-11-32-24.7-32H548V782.1c165.3-18 294-158 294-328.1zM512 624c93.9 0 170-75.2 170-168V232c0-92.8-76.1-168-170-168s-170 75.2-170 168v224c0 92.8 76.1 168 170 168zm-94-392c0-50.6 41.9-92 94-92s94 41.4 94 92v224c0 50.6-41.9 92-94 92s-94-41.4-94-92V232z"
+                />
+              </svg>
+              <span class="ppReg">Audio</span>
+            </div>
+            <div class="right">
+              <label class="switch">
+                <input type="checkbox" class="help-me-audio-switch" />
+                <span class="slider round"></span>
+              </label>
+            </div>
+          </div>
+          <button type="button" class="btn help-me-start-record-btn ppSB">
+            Start Recording
+          </button>
+        </div>
+      </div>
+
+      <!-- Bubble control -->
+      <div class="help-me-bubble-control show">
+        <div class="left help-me-bubble-user-img">
+          <div
+            class="hmo-avatar-img hide"
+            style="
+              background-image: url('https://xsgames.co/randomusers/assets/avatars/male/73.jpg');
+            "
+          ></div>
+          <video src="" class="hmo-user-video show"></video>
+        </div>
+        <div class="right help-me-bubble-main-controls">
+          <div class="hmo-bubble-counter">
+            <span class="counter-txt hmo-bubble-counter-txt ppSB"
+              >00:00:00</span
+            >
+            <div class="hmo-animate-pulse"></div>
+          </div>
+          <div class="bubble-media-controls">
+            <div class="pause-control bubble-controls">
+              <button
+                class="bubble-pause-btn bubble-media-control"
+                name="pause"
+                data-name="pause"
+              >
                 <svg
                   width="128"
                   height="128"
-                  viewBox="0 0 32 32"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon"
                 >
                   <path
                     fill=""
-                    d="M21 26H4a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h17a2 2 0 0 1 2 2v4.06l5.42-3.87A1 1 0 0 1 30 9v14a1 1 0 0 1-1.58.81L23 19.94V24a2 2 0 0 1-2 2ZM4 8v16h17v-6a1 1 0 0 1 1.58-.81L28 21.06V10.94l-5.42 3.87A1 1 0 0 1 21 14V8Z"
+                    d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z"
                   />
                 </svg>
-                <span class="ppReg">Camera</span>
-              </div>
-              <div class="right">
-                <label class="switch">
-                  <input type="checkbox" class="help-me-camera-switch" />
-                  <span class="slider round"></span>
-                </label>
-              </div>
+              </button>
+              <span class="ppReg">Pause</span>
             </div>
-            <div class="help-me-audio-control">
-              <div class="left hmo-d-flex gap-2">
+            <div class="stop-control bubble-controls">
+              <button class="bubble-stop-btn bubble-media-control" name="stop">
                 <svg
                   width="128"
                   height="128"
-                  viewBox="0 0 1024 1024"
+                  viewBox="0 0 24 24"
                   xmlns="http://www.w3.org/2000/svg"
                   class="icon"
                 >
                   <path
-                    fill="#000000"
-                    d="M842 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 140.3-113.7 254-254 254S258 594.3 258 454c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8c0 168.7 126.6 307.9 290 327.6V884H326.7c-13.7 0-24.7 14.3-24.7 32v36c0 4.4 2.8 8 6.2 8h407.6c3.4 0 6.2-3.6 6.2-8v-36c0-17.7-11-32-24.7-32H548V782.1c165.3-18 294-158 294-328.1zM512 624c93.9 0 170-75.2 170-168V232c0-92.8-76.1-168-170-168s-170 75.2-170 168v224c0 92.8 76.1 168 170 168zm-94-392c0-50.6 41.9-92 94-92s94 41.4 94 92v224c0 50.6-41.9 92-94 92s-94-41.4-94-92V232z"
+                    fill=""
+                    d="M8 6h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"
                   />
                 </svg>
-                <span class="ppReg">Audio</span>
-              </div>
-              <div class="right">
-                <label class="switch">
-                  <input type="checkbox" class="help-me-audio-switch" />
-                  <span class="slider round"></span>
-                </label>
-              </div>
+              </button>
+              <span class="ppReg">Stop</span>
             </div>
-            <button type="button" class="btn help-me-start-record-btn ppSB">
-              Start Recording
-            </button>
-          </div>
-        </div>
-
-        <!-- Bubble control -->
-        <div class="help-me-bubble-control hide">
-          <div class="left help-me-bubble-user-img">
-            <div
-              class="hmo-avatar-img hide"
-              style="
-                background-image: url('https://xsgames.co/randomusers/assets/avatars/male/73.jpg');
-              "
-            ></div>
-            <video src="" class="hmo-user-video show"></video>
-          </div>
-          <div class="right help-me-bubble-main-controls">
-            <div class="hmo-bubble-counter">
-              <span class="counter-txt hmo-bubble-counter-txt ppSB"
-                >00:00:00</span
+            <div class="camera-control bubble-controls">
+              <button
+                class="bubble-camera-btn bubble-media-control"
+                name="camera"
               >
-              <div class="hmo-animate-pulse"></div>
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
+                >
+                  <path
+                    fill=""
+                    d="M21.53 7.15a1 1 0 0 0-1 0L17 8.89A3 3 0 0 0 14 6H5a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h9a3 3 0 0 0 3-2.89l3.56 1.78A1 1 0 0 0 21 17a1 1 0 0 0 .53-.15A1 1 0 0 0 22 16V8a1 1 0 0 0-.47-.85ZM15 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1Zm5-.62l-3-1.5v-1.76l3-1.5Z"
+                  />
+                </svg>
+              </button>
+              <span class="ppReg">Camera</span>
             </div>
-            <div class="bubble-media-controls">
-              <div class="pause-control bubble-controls">
-                <button
-                  class="bubble-pause-btn bubble-media-control"
-                  name="pause"
-                  data-name="pause"
+            <div class="audio-control bubble-controls">
+              <button
+                class="bubble-audio-btn bubble-media-control"
+                name="audio"
+              >
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 512 512"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
                 >
-                  <svg
-                    width="128"
-                    height="128"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
-                  >
-                    <path
-                      fill=""
-                      d="M8 19c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2v10c0 1.1.9 2 2 2zm6-12v10c0 1.1.9 2 2 2s2-.9 2-2V7c0-1.1-.9-2-2-2s-2 .9-2 2z"
-                    />
-                  </svg>
-                </button>
-                <span class="ppReg">Pause</span>
-              </div>
-              <div class="stop-control bubble-controls">
-                <button
-                  class="bubble-stop-btn bubble-media-control"
-                  name="stop"
+                  <path
+                    fill="none"
+                    stroke="#000000"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="32"
+                    d="M192 448h128m64-240v32c0 70.4-57.6 128-128 128h0c-70.4 0-128-57.6-128-128v-32m128 160v80"
+                  />
+                  <path
+                    fill="none"
+                    stroke="#000000"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="32"
+                    d="M256 64a63.68 63.68 0 0 0-64 64v111c0 35.2 29 65 64 65s64-29 64-65V128c0-36-28-64-64-64Z"
+                  />
+                </svg>
+              </button>
+              <span class="ppReg">Audio</span>
+            </div>
+            <div class="bubble-controls">
+              <button class="trash-btn" name="audio">
+                <svg
+                  width="128"
+                  height="128"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="icon"
                 >
-                  <svg
-                    width="128"
-                    height="128"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
-                  >
-                    <path
-                      fill=""
-                      d="M8 6h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H8c-1.1 0-2-.9-2-2V8c0-1.1.9-2 2-2z"
-                    />
-                  </svg>
-                </button>
-                <span class="ppReg">Stop</span>
-              </div>
-              <div class="camera-control bubble-controls">
-                <button
-                  class="bubble-camera-btn bubble-media-control"
-                  name="camera"
-                >
-                  <svg
-                    width="128"
-                    height="128"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
-                  >
-                    <path
-                      fill=""
-                      d="M21.53 7.15a1 1 0 0 0-1 0L17 8.89A3 3 0 0 0 14 6H5a3 3 0 0 0-3 3v6a3 3 0 0 0 3 3h9a3 3 0 0 0 3-2.89l3.56 1.78A1 1 0 0 0 21 17a1 1 0 0 0 .53-.15A1 1 0 0 0 22 16V8a1 1 0 0 0-.47-.85ZM15 15a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h9a1 1 0 0 1 1 1Zm5-.62l-3-1.5v-1.76l3-1.5Z"
-                    />
-                  </svg>
-                </button>
-                <span class="ppReg">Camera</span>
-              </div>
-              <div class="audio-control bubble-controls">
-                <button
-                  class="bubble-audio-btn bubble-media-control"
-                  name="audio"
-                >
-                  <svg
-                    width="128"
-                    height="128"
-                    viewBox="0 0 512 512"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
-                  >
-                    <path
-                      fill="none"
-                      stroke="#000000"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="32"
-                      d="M192 448h128m64-240v32c0 70.4-57.6 128-128 128h0c-70.4 0-128-57.6-128-128v-32m128 160v80"
-                    />
-                    <path
-                      fill="none"
-                      stroke="#000000"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="32"
-                      d="M256 64a63.68 63.68 0 0 0-64 64v111c0 35.2 29 65 64 65s64-29 64-65V128c0-36-28-64-64-64Z"
-                    />
-                  </svg>
-                </button>
-                <span class="ppReg">Audio</span>
-              </div>
-              <div class="bubble-controls">
-                <button class="trash-btn" name="audio">
-                  <svg
-                    width="128"
-                    height="128"
-                    viewBox="0 0 24 24"
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="icon"
-                  >
-                    <path
-                      fill="none"
-                      stroke="#cccc"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
-                    />
-                  </svg>
-                </button>
-                <span class="hidden">Trash</span>
-              </div>
+                  <path
+                    fill="none"
+                    stroke="#cccc"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 7h16m-10 4v6m4-6v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v3"
+                  />
+                </svg>
+              </button>
+              <span class="hidden">Trash</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <!-- Preview Video -->
+      <!-- Preview Video -->
+      <div class="hmo-preview-video hide">
+        <div class="video-card">
+          <video src="" class="hmo-preview-video-tag" controls></video>
+          <br />
+          <div class="video-footer">
+            <button class="btn cancel-btn hmo-cancel-video ppSB">Cancel</button>
+            <button class="btn hmo-save-video save-btn ppSB">Save Video</button>
+          </div>
+        </div>
       </div>
     </div>
 
