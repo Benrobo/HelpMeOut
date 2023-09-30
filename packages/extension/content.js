@@ -174,7 +174,19 @@ window.addEventListener("DOMContentLoaded", async () => {
   // update audio and camera switch input checked state
   HMOCameraSwitch.toggleAttribute("checked", !!cameraState);
   HMOAudioSwitch.toggleAttribute("checked", !!audioState);
-  cameraState ? showCam() : hideCam();
+
+  // prevent displayMedia from getting called in BG.
+  setInterval(() => {
+    if (HMOContainer.classList.contains("show")) {
+      if (cameraState) showCam();
+      else if (!startedRecording) hideCam();
+    } else {
+      stream?.getTracks().forEach((track) => {
+        track.stop();
+      });
+      hideCam();
+    }
+  }, 500);
 
   // disable bubble audio button if recording hasn't begun
   // audioBtn.classList.add("disabled");
@@ -185,7 +197,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     localStorage.setItem("@hmo_use_camera", e.target.checked);
     cameraState = e.target.checked;
     cameraBtn.innerHTML = e.target.checked ? cameraOnIcon : cameraOffIcon;
-    e.target.checked ? showCam() : hideCam();
+    e.target.checked ? startCam() : hideCam();
     videoOff = e.target.checked;
   });
   HMOAudioSwitch.addEventListener("change", async (e) => {
@@ -211,15 +223,14 @@ window.addEventListener("DOMContentLoaded", async () => {
   if (startedRecording) HMOBubbCounterAnim.classList.add("started");
   else HMOBubbCounterAnim.classList.remove("started");
 
-  // update video and audio icon state
+  // update audio icon state
   audioState
     ? (audioBtn.innerHTML = audioOnIcon)
     : (audioBtn.innerHTML = audioOffIcon);
-
-  cameraState
-    ? (cameraBtn.innerHTML = cameraOnIcon)
-    : (cameraBtn.innerHTML = cameraOffIcon);
   audioOff = audioState;
+
+  // set initial camera to camera-off
+  cameraBtn.innerHTML = cameraOffIcon;
 
   // handle closing of HMO Record component
   HMOCloseBtn.onclick = () => {
@@ -252,11 +263,13 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!videoOff) {
       videoOff = true;
       cameraBtn.innerHTML = cameraOnIcon;
-      showCam();
+      if (startedRecording) showCam();
+      startCam();
     } else {
       videoOff = false;
       cameraBtn.innerHTML = cameraOffIcon;
-      hideCam();
+      if (startedRecording) hideCam();
+      stopCam();
     }
   };
 
@@ -369,6 +382,9 @@ window.addEventListener("DOMContentLoaded", async () => {
 
     // stop recorder
     mediaRecorder.stop();
+    stream?.getTracks().forEach((track) => {
+      track.stop();
+    });
 
     // display preview video
     await sleep(1);
@@ -510,8 +526,9 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
         .getUserMedia({ video: true, audio: audioState })
-        .then((stream) => {
-          HMOBubbUserVideo.srcObject = stream;
+        .then((vidStream) => {
+          stream = vidStream;
+          HMOBubbUserVideo.srcObject = vidStream;
           HMOBubbUserVideo.addEventListener("loadedmetadata", () => {
             HMOBubbUserVideo.play();
           });
@@ -526,13 +543,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   function hideCam() {
     HMOBubbUserVideo.classList.add("hide");
     HMOBubbUserVideo.classList.remove("show");
-    stopCam(false);
+    stopCam();
   }
 
   function showCam() {
     HMOBubbUserVideo.classList.remove("hide");
     HMOBubbUserVideo.classList.add("show");
-    startCam(true);
+    HMOBubbUserVideo.muted = true;
   }
 });
 
