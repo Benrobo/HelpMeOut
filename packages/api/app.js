@@ -4,6 +4,7 @@ const cors = require("cors");
 const bodyParser = require("body-parser");
 const router = require("./router");
 const dbConnect = require("./config/mongodb");
+const path = require("path");
 
 // connect db
 dbConnect();
@@ -11,6 +12,12 @@ dbConnect();
 // middlewares
 app.use(cors());
 app.use(bodyParser.json({ limit: "50mb" }));
+
+// serve media files from remote server
+app.use(
+  "/media/files",
+  express.static(path.join(__dirname, "storage", "videos"))
+);
 
 app.use("/api", router);
 
