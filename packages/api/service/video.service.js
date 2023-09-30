@@ -1,7 +1,12 @@
 const { createFile, deleteFile } = require("../helper/file-manager");
-const { convertWebMToAudio, transcribeAudio } = require("../helper/video");
+const {
+  convertWebMToAudio,
+  transcribeAudio,
+  ProcessScreenRecordingVideos,
+} = require("../helper/video");
 const Video = require("../model/Video");
 const shortId = require("short-uuid");
+const { processVideos } = require("../process/agenda");
 
 async function saveVideo(req, res) {
   try {
@@ -17,31 +22,22 @@ async function saveVideo(req, res) {
 
     const videoId = shortId.generate().slice(0, 10);
 
-    // await Video.create({
-    //   uId: videoId,
-    //   videoData: videobuffer,
-    //   audioData: audiobuffer,
-    // });
+    await Video.create({
+      uId: videoId,
+      videoData: videobuffer,
+    });
 
     const fileName = `${videoId}.webm`;
     const fileDir = process.cwd() + "/storage";
+
+    // create file
     const fileCreated = createFile(fileDir, fileName, audiobuffer);
-
-    // convert to audio file
     if (fileCreated) {
-      const input = `./storage/${fileName}`;
-      const output = `./storage/${videoId}.mp3`;
-      await convertWebMToAudio(input, output);
-
-      // delete webm file after use
-      deleteFile(input);
-
-      // create transcription of audio file
-      const transcribed = await transcribeAudio(output);
-
-      console.log(transcribed);
-      res.status(200).json({ message: "Video saved successfully" });
+      // background job
+      await processVideos(fileName, videoId);
     }
+
+    res.status(200).json({ message: "Video processing in background." });
   } catch (e) {
     console.log(`Error saving video: ${e.message}`);
     res.status(500).json({ message: "Something went wrong." });
