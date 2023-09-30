@@ -457,6 +457,10 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
   };
   stopBtn.onclick = async () => {
+    counter.stop();
+    startedRecording = false;
+    stopBtn.classList.add("disabled");
+    pauseBtn.classList.add("disabled");
     if (!streamRequestEnded) {
       await endStream(hmo_streamVideoId);
       streamRequestEnded = true;
