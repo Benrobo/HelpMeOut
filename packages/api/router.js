@@ -3,7 +3,7 @@ const {
   saveVideo,
   getVideoById,
   getAllVideos,
-} = require("./service/saveVideo");
+} = require("./service/video.service");
 const multer = require("multer");
 
 const storage = multer.memoryStorage(); // Store the file in memory

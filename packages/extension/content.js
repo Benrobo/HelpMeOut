@@ -46,7 +46,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   var HMOSaveVideo = $(".hmo-save-video");
   var HMOCancelVideo = $(".hmo-cancel-video");
 
-  // bubbe controls
+  // bubble controls
   var HMOBubbUserImg = $(".hmo-avatar-img");
   var HMOBubbUserVideo = $(".hmo-user-video");
   var HMOBubbCounter = $(".hmo-bubble-counter-txt");
@@ -94,6 +94,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     ? "video/webm; codecs=vp9"
     : "video/webm";
   var mediaRecorder = null;
+  var stream;
 
   // bubble counter
   timerInterval = setInterval(() => {
@@ -175,6 +176,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   HMOAudioSwitch.toggleAttribute("checked", !!audioState);
   cameraState ? showCam() : hideCam();
 
+  // disable bubble audio button if recording hasn't begun
+  // audioBtn.classList.add("disabled");
+  // audioBtn.setAttribute("disabled", true);
+
   // handle camera and audio toggle states
   HMOCameraSwitch.addEventListener("change", (e) => {
     localStorage.setItem("@hmo_use_camera", e.target.checked);
@@ -183,11 +188,14 @@ window.addEventListener("DOMContentLoaded", async () => {
     e.target.checked ? showCam() : hideCam();
     videoOff = e.target.checked;
   });
-  HMOAudioSwitch.addEventListener("change", (e) => {
+  HMOAudioSwitch.addEventListener("change", async (e) => {
     localStorage.setItem("@hmo_use_audio", e.target.checked);
     audioState = e.target.checked;
     audioBtn.innerHTML = e.target.checked ? audioOnIcon : audioOffIcon;
     audioOff = e.target.checked;
+    if (e.target.checked) {
+      await reqAudioPerm();
+    }
   });
 
   // update stop button if recording hasn't started
@@ -211,6 +219,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   cameraState
     ? (cameraBtn.innerHTML = cameraOnIcon)
     : (cameraBtn.innerHTML = cameraOffIcon);
+  audioOff = audioState;
 
   // handle closing of HMO Record component
   HMOCloseBtn.onclick = () => {
@@ -219,13 +228,23 @@ window.addEventListener("DOMContentLoaded", async () => {
   };
 
   //   toggle audio and video output
-  audioBtn.onclick = () => {
+  audioBtn.onclick = async () => {
+    const audioTracks = stream?.getAudioTracks();
+    console.log({ audioTracks });
     if (!audioOff) {
       audioOff = true;
+      audioState = true;
       audioBtn.innerHTML = audioOnIcon;
+      if (audioTracks.length > 0) {
+        audioTracks[0].enabled = true;
+      }
     } else {
       audioOff = false;
+      audioState = false;
       audioBtn.innerHTML = audioOffIcon;
+      if (audioTracks.length > 0) {
+        audioTracks[0].enabled = false;
+      }
     }
   };
 
@@ -259,32 +278,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       mediaRecorder.resume();
     }
   };
-  stopBtn.onclick = async () => {
-    counter.stop();
-    startedRecording = false;
-    stopBtn.classList.add("disabled");
-    pauseBtn.classList.add("disabled");
-    HMOStartRecordingBtn.classList.remove("disabled");
-    HMOStartRecordingBtn.removeAttribute("disabled");
-    shouldRestart = true;
-
-    // stop recorder
-    mediaRecorder.stop();
-
-    // display preview video
-    await sleep(1);
-    HMOPreviewVideoContainer.classList.remove("hide");
-    HMOPreviewVideoContainer.classList.add("show");
-    HMOPreviewVideo.src = recordedBlobUrl;
-
-    // show the record component
-    HMORecorderComp.classList.remove("hide");
-    HMORecorderComp.classList.add("show");
-
-    // hide recorder ui component
-    hideRecorderComp();
-    // save recording to storage
-  };
+  stopBtn.onclick = async () => await resetUIOnRecordStop();
 
   // start recording button
   HMOStartRecordingBtn.onclick = async () => {
@@ -294,6 +288,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       startedRecording = true;
       pauseBtn.classList.remove("disabled");
       stopBtn.classList.remove("disabled");
+      audioBtn.classList.remove("disabled");
+      audioBtn.removeAttribute("disabled");
       HMOBubbCounterAnim.classList.add("started");
       HMOStartRecordingBtn.setAttribute("disabled", true);
       HMOStartRecordingBtn.classList.add("disabled");
@@ -346,32 +342,96 @@ window.addEventListener("DOMContentLoaded", async () => {
     window.location.reload();
   };
 
+  // request audio permission
+  async function reqAudioPerm() {
+    try {
+      await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+    } catch (e) {
+      window.alert(e.message);
+      console.log(`Audio permission denied.`);
+    }
+  }
+
+  // reset UI component on recording stoped
+  async function resetUIOnRecordStop() {
+    counter.stop();
+    startedRecording = false;
+    stopBtn.classList.add("disabled");
+    pauseBtn.classList.add("disabled");
+
+    HMOStartRecordingBtn.classList.remove("disabled");
+    HMOStartRecordingBtn.removeAttribute("disabled");
+
+    shouldRestart = true;
+
+    // stop recorder
+    mediaRecorder.stop();
+
+    // display preview video
+    await sleep(1);
+    HMOPreviewVideoContainer.classList.remove("hide");
+    HMOPreviewVideoContainer.classList.add("show");
+    HMOPreviewVideo.src = recordedBlobUrl;
+
+    // show the record component
+    HMORecorderComp.classList.remove("hide");
+    HMORecorderComp.classList.add("show");
+
+    // hide recorder ui component
+    hideRecorderComp();
+  }
+
   // start recording button
   async function startRecording() {
     try {
-      let stream = await navigator.mediaDevices.getDisplayMedia({
-        video: true,
+      let videoInput = await navigator.mediaDevices.getDisplayMedia({
+        video: { mediaSource: "screen" },
+        audio: audioState,
       });
+
+      let audioInput = await navigator.mediaDevices.getUserMedia({
+        audio: true,
+        video: false,
+      });
+
+      // combine both media video/audio
+      let combineMedia = new MediaStream([
+        ...videoInput.getTracks(),
+        ...audioInput.getTracks(),
+      ]);
+
       if (mediaRecorder === null) {
-        mediaRecorder = new MediaRecorder(stream, {
+        mediaRecorder = new MediaRecorder(combineMedia, {
           mimeType: mime,
         });
         mediaRecorder.addEventListener("dataavailable", function (e) {
           recordedChunks.push(e.data);
         });
 
-        mediaRecorder.addEventListener("stop", function () {
+        mediaRecorder.addEventListener("stop", async function () {
           let blob = new Blob(recordedChunks, {
             type: recordedChunks[0].type,
           });
           recordedBlobUrl = URL.createObjectURL(blob);
-          stream.getTracks()[0].stop();
+          videoInput.getTracks()[0].stop();
+          audioInput.getTracks().forEach((track) => {
+            track.stop();
+          });
+
+          // update recording ui component
+          await resetUIOnRecordStop();
         });
 
         mediaRecorder.start();
+
+        stream = audioInput;
         return true;
       }
     } catch (e) {
+      console.log(e);
       console.log(`error starting recorder`);
       return false;
     }
@@ -445,7 +505,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     HMOBubbUserVideo.srcObject = null;
   }
 
-  function startCam() {
+  function startCam(audioState) {
     if (!HMOBubbUserVideo) return;
     if (navigator.mediaDevices.getUserMedia) {
       navigator.mediaDevices
@@ -457,6 +517,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           });
         })
         .catch(function (error) {
+          window.alert(error.message);
           console.log("Something went wrong!");
         });
     }
@@ -465,13 +526,13 @@ window.addEventListener("DOMContentLoaded", async () => {
   function hideCam() {
     HMOBubbUserVideo.classList.add("hide");
     HMOBubbUserVideo.classList.remove("show");
-    stopCam();
+    stopCam(false);
   }
 
   function showCam() {
     HMOBubbUserVideo.classList.remove("hide");
     HMOBubbUserVideo.classList.add("show");
-    startCam();
+    startCam(true);
   }
 });
 
