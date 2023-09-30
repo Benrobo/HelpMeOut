@@ -4,36 +4,6 @@ const { processVideos } = require("../process/agenda");
 const fs = require("fs");
 const path = require("path");
 
-async function saveVideo(req, res) {
-  try {
-    const blobBuffer = req?.files["blob"][0]?.buffer;
-    const videoId = req?.body?.videoId;
-    if (typeof blobBuffer === "undefined" || typeof videoId === "undefined") {
-      res.status(400).json({ message: "Media payload is missing." });
-      return;
-    }
-
-    await Video.create({
-      uId: videoId,
-    });
-
-    const fileName = `${videoId}.webm`;
-    const fileDir = process.cwd() + "/storage";
-
-    // create file
-    const fileCreated = createFile(fileDir, fileName, blobBuffer);
-    if (fileCreated) {
-      // background job
-      await processVideos(fileName, videoId);
-    }
-
-    res.status(200).json({ message: "Video processing in background." });
-  } catch (e) {
-    console.log(`Error saving video: ${e.message}`);
-    res.status(500).json({ message: "Something went wrong." });
-  }
-}
-
 async function streamVideoBytes(req, res) {
   try {
     const blobBuffer = req?.files["blob"][0]?.buffer;
@@ -45,6 +15,7 @@ async function streamVideoBytes(req, res) {
     }
 
     const videoExists = await Video.findOne({ vId: videoId });
+
     if (!videoExists) {
       await Video.create({
         vId: videoId,
@@ -59,6 +30,7 @@ async function streamVideoBytes(req, res) {
     if (!fs.existsSync(videoPath)) {
       createFile(fileDir, fileName, "");
     }
+
     const videoStream = fs.createWriteStream(videoPath);
     videoStream.write(blobBuffer);
     console.info(`Streaming chunks...`);
@@ -130,29 +102,7 @@ async function getVideoById(req, res) {
       "..",
       "storage",
       "videos",
-      `${videoId}.mp4`
-    );
-    const videoWebmPath = path.join(
-      __dirname,
-      "..",
-      "storage",
-      "videos",
       `${videoId}.webm`
-    );
-    const audioPath = path.join(
-      __dirname,
-      "..",
-      "storage",
-      "audios",
-      `${videoId}.mp3`
-    );
-
-    const thumbnailPath = path.join(
-      __dirname,
-      "..",
-      "storage",
-      "thumbnails",
-      `${videoId}.png`
     );
 
     // check if this video exist on server
@@ -161,11 +111,8 @@ async function getVideoById(req, res) {
 
       // delete from DB
       await Video.deleteOne({ vId: videoId });
-      // delete the video, audio and thumbnail
+      // delete the video file
       deleteFile(videoPath);
-      deleteFile(videoWebmPath);
-      deleteFile(audioPath);
-      deleteFile(thumbnailPath);
       return;
     }
 
@@ -189,10 +136,21 @@ async function getAllVideos(req, res) {
   try {
     // check if video exists
     const allVideos = await Video.find();
+    const videoPath = path.join(__dirname, "..", "storage", "videos");
+    const updated =
+      allVideos?.length > 0
+        ? allVideos.map((d) => {
+            return {
+              vId: d?.vId,
+              transcript: d?.transcript,
+              video: `${videoPath}/${d?.vId}.webm`,
+            };
+          })
+        : [];
 
     res
       .status(200)
-      .json({ message: "Video fetched successfully", data: allVideos });
+      .json({ message: "Video fetched successfully", data: updated });
   } catch (e) {
     console.log(`Error fetching all video: ${e.message}`);
     res.status(500).json({ message: "Something went wrong" });
@@ -200,7 +158,6 @@ async function getAllVideos(req, res) {
 }
 
 module.exports = {
-  saveVideo,
   getVideoById,
   getAllVideos,
   streamVideoBytes,
