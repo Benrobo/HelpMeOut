@@ -13,11 +13,173 @@ var $ = (elm) => document.querySelector(elm);
 var $all = (elm) => document.querySelectorAll(elm);
 var sleep = (time = 1) => new Promise((res) => setTimeout(res, time * 1000));
 
+// random id generator
+var randomId = (len = 10) => {
+  let char = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghij012345678".split("");
+  let id = "";
+  for (let i = 0; i < len; i++) {
+    const rand = Math.floor(Math.random() * char.length);
+    id += char[rand];
+  }
+  return id;
+};
+
+// Custom IndexDB Database
+class DatabaseClient {
+  constructor(dbName) {
+    this.dbName = dbName;
+  }
+
+  openDatabase() {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName);
+
+      request.onupgradeneeded = (event) => {
+        const db = event.target.result;
+
+        if (!db.objectStoreNames.contains("hmo-videos")) {
+          db.createObjectStore("hmo-videos", { keyPath: "id" });
+        }
+      };
+
+      request.onsuccess = (event) => {
+        this.db = event.target.result;
+        resolve(this);
+      };
+
+      request.onerror = (event) => {
+        reject(`Error opening database: ${event.target.errorCode}`);
+      };
+    });
+  }
+
+  insert(tableName, data) {
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject("Database is not open.");
+        return;
+      }
+
+      const transaction = this.db.transaction([tableName], "readwrite");
+      const objectStore = transaction.objectStore(tableName);
+      const request = objectStore.add(data);
+
+      request.onsuccess = () => {
+        resolve("Record added successfully.");
+      };
+
+      request.onerror = (event) => {
+        reject(`Error adding record: ${event.target.errorCode}`);
+      };
+    });
+  }
+
+  update(tableName, filter, updates) {
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject("Database is not open.");
+        return;
+      }
+
+      const transaction = this.db.transaction([tableName], "readwrite");
+      const objectStore = transaction.objectStore(tableName);
+      const request = objectStore.openCursor();
+
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+          const record = cursor.value;
+          const match = Object.keys(filter).every(
+            (key) => filter[key] === record[key]
+          );
+
+          if (match) {
+            for (const key in updates) {
+              record[key] = updates[key];
+            }
+
+            cursor.update(record);
+            resolve("Record updated successfully.");
+            return;
+          }
+
+          cursor.continue();
+        } else {
+          reject("No matching record found.");
+        }
+      };
+    });
+  }
+
+  delete(tableName, filter) {
+    return new Promise((resolve, reject) => {
+      if (!this.db) {
+        reject("Database is not open.");
+        return;
+      }
+
+      const transaction = this.db.transaction([tableName], "readwrite");
+      const objectStore = transaction.objectStore(tableName);
+      const request = objectStore.openCursor();
+
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+
+        if (cursor) {
+          const record = cursor.value;
+          const match = Object.keys(filter).every(
+            (key) => filter[key] === record[key]
+          );
+
+          if (match) {
+            cursor.delete();
+            resolve("Record deleted successfully.");
+            return;
+          }
+
+          cursor.continue();
+        } else {
+          reject("No matching record found.");
+        }
+      };
+    });
+  }
+
+  tableExists(tableName) {
+    return new Promise((resolve, reject) => {
+      const request = indexedDB.open(this.dbName);
+
+      request.onsuccess = (event) => {
+        const db = event.target.result;
+
+        if (db.objectStoreNames.contains(tableName)) {
+          resolve(true);
+        } else {
+          resolve(false);
+        }
+
+        db.close();
+      };
+
+      request.onerror = (event) => {
+        reject(`Error opening database: ${event.target.error}`);
+      };
+    });
+  }
+}
+
+var DB_Name = "@hmo-db";
+var DBClient = new DatabaseClient(DB_Name);
+
 window.addEventListener("DOMContentLoaded", async () => {
   insertIframe();
 
+  // open db connection
+  await DBClient.openDatabase();
+
   // wait 2sec before continuing
-  await sleep(2);
+  await sleep(1);
 
   // Draggable
   var container = $("body");
@@ -95,6 +257,8 @@ window.addEventListener("DOMContentLoaded", async () => {
     : "video/webm";
   var mediaRecorder = null;
   var stream;
+  var hmo_streamVideoId = randomId();
+  var streamRequestEnded = false;
 
   // bubble counter
   timerInterval = setInterval(() => {
@@ -186,7 +350,7 @@ window.addEventListener("DOMContentLoaded", async () => {
       });
       hideCam();
     }
-  }, 500);
+  }, 100);
 
   // disable bubble audio button if recording hasn't begun
   // audioBtn.classList.add("disabled");
@@ -291,7 +455,13 @@ window.addEventListener("DOMContentLoaded", async () => {
       mediaRecorder.resume();
     }
   };
-  stopBtn.onclick = async () => await resetUIOnRecordStop();
+  stopBtn.onclick = async () => {
+    if (!streamRequestEnded) {
+      await endStream(hmo_streamVideoId);
+      streamRequestEnded = true;
+    }
+    await resetUIOnRecordStop();
+  };
 
   // start recording button
   HMOStartRecordingBtn.onclick = async () => {
@@ -313,15 +483,25 @@ window.addEventListener("DOMContentLoaded", async () => {
 
   //   save video
   HMOSaveVideo.onclick = async () => {
-    const blob = new Blob(recordedChunks, {
+    const videoBlob = new Blob(recordedChunks, {
       type: recordedChunks[0].type,
     });
     const audioBlob = new Blob(recordedChunks, {
       type: "audio/mpeg-3",
     });
+    return;
+    const videoId = randomId();
     const formData = new FormData();
-    formData.append("videoFile", blob);
-    formData.append("audioFile", audioBlob);
+    formData.append("blob", audioBlob);
+    formData.append("videoId", videoId);
+
+    // save blob to indexDB first
+    await DBClient.insert("hmo-videos", {
+      id: videoId,
+      blob: videoBlob,
+    });
+
+    return;
     try {
       HMOSaveVideo.innerHTML = "Saving...";
       // Send the FormData in a POST request
@@ -331,10 +511,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         body: formData,
       });
       const result = await req.json();
-      if (req.status !== 200) {
-        window.alert(result?.message);
-        return;
-      }
+      window.alert(result?.message);
       HMOSaveVideo.innerHTML = "Save Video";
     } catch (e) {
       HMOSaveVideo.innerHTML = "Save Video";
@@ -355,9 +532,46 @@ window.addEventListener("DOMContentLoaded", async () => {
     // hide main frame container
     toggleScreenRecord();
 
-    // reload page to reset all state
     window.location.reload();
   };
+
+  // Streams handler
+  async function endStream(videoId) {
+    try {
+      const url = `${API_BASE_URL}/stream/end/${videoId}`;
+      const req = await fetch(url);
+      const res = await req.json();
+      window.alert(res?.message);
+    } catch (e) {
+      console.log(`Something went wrong: ${e.message}`);
+      window.alert(res?.message);
+    }
+  }
+  async function streamChunksToServer(chunk) {
+    if (chunk.length > 0) {
+      const videoBlob = new Blob(recordedChunks, {
+        type: chunk[0]?.type,
+      });
+      const formData = new FormData();
+      formData.append("blob", videoBlob);
+      formData.append("videoId", hmo_streamVideoId);
+
+      try {
+        // Send the FormData in a POST request
+        const url = `${API_BASE_URL}/video/stream`;
+        const req = await fetch(url, {
+          method: "POST",
+          body: formData,
+        });
+        const result = await req.json();
+        console.log(`Stream response: ${result?.message}`);
+      } catch (e) {
+        console.error(`Something went wrong Streaming: ${e?.message}`);
+      }
+    } else {
+      console.info(`Streaming chunk is empty.`);
+    }
+  }
 
   // request audio permission
   async function reqAudioPerm() {
@@ -427,8 +641,13 @@ window.addEventListener("DOMContentLoaded", async () => {
         mediaRecorder = new MediaRecorder(combineMedia, {
           mimeType: mime,
         });
-        mediaRecorder.addEventListener("dataavailable", function (e) {
+
+        mediaRecorder.addEventListener("dataavailable", async function (e) {
           recordedChunks.push(e.data);
+
+          // stream to backend
+          const chunk = [e.data];
+          await streamChunksToServer(chunk);
         });
 
         mediaRecorder.addEventListener("stop", async function () {
@@ -443,9 +662,15 @@ window.addEventListener("DOMContentLoaded", async () => {
 
           // update recording ui component
           await resetUIOnRecordStop();
+
+          // end stream
+          if (!streamRequestEnded) {
+            await endStream(hmo_streamVideoId);
+            streamRequestEnded = true;
+          }
         });
 
-        mediaRecorder.start();
+        mediaRecorder.start(1000);
 
         stream = audioInput;
         return true;

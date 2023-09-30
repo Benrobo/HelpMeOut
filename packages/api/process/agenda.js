@@ -8,25 +8,30 @@ const agenda = new Agenda({
   },
 });
 
-agenda.define("process_video", async (job, done) => {
-  try {
-    const { fileName, videoId } = job.attrs.data;
-    await ProcessScreenRecordingVideos(fileName, videoId);
-    done();
-  } catch (e) {
-    console.log(e);
-    console.log(`Error processing recorded video. ${e.message}`);
-    done();
-  }
-});
+agenda.define(
+  "process_video",
+  async (job, done) => {
+    try {
+      const { videoId } = job.attrs.data;
+      await ProcessScreenRecordingVideos(videoId);
+      done();
+    } catch (e) {
+      console.log(e);
+      console.log(`Error processing recorded video. ${e.message}`);
+      done();
+    }
+  },
+  { concurrency: 10, priority: "high" }
+);
 
-async function processVideos(fileName, videoId) {
+async function processVideos(videoId) {
   agenda.start();
   await agenda.now("process_video", {
-    fileName,
     videoId,
   });
-  console.log("VIDEO PROCESSING IN BG.");
+  // agenda.start();
+  console.log("");
+  console.log("VIDEO PROCESSING IN BG. \n");
 }
 
 agenda.on("start", (job) => {

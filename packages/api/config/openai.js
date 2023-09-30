@@ -1,7 +1,8 @@
 const OpenAI = require("openai");
+const ENV = require("./env");
 
 const openai = new OpenAI({
-  apiKey: "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",
+  apiKey: ENV.openaiKey,
 });
 
 module.exports = openai;

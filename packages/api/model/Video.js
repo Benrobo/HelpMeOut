@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
 
 const videoSchema = mongoose.Schema({
-  uId: { type: String, required: true },
-  videoData: { type: Buffer, required: true },
+  vId: { type: String, required: true },
+  thumbnail: { type: String, required: false },
   transcript: { type: String, required: false },
   createdAt: { type: Date, default: Date.now },
 });

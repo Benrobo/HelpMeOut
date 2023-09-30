@@ -6,7 +6,7 @@ const path = require("path");
 const { sleep } = require(".");
 const Video = require("../model/Video");
 
-function convertWebMToAudio(input, output) {
+function convertMp4ToAudio(input, output) {
   return new Promise((resolve, reject) => {
     ffmpeg(input)
       .output(output)
@@ -15,23 +15,75 @@ function convertWebMToAudio(input, output) {
         resolve();
       })
       .on("error", (err) => {
-        console.error("Error:", err.message);
+        console.error("Error converting to audio:", err.message);
         reject(err);
       })
       .run();
   });
 }
 
-async function transcribeAudio(filename, videoId, output) {
+function convertWebMToMp4(input, output) {
+  return new Promise((resolve, reject) => {
+    ffmpeg(input)
+      .output(output)
+      .on("end", () => {
+        // delete .webm file
+        deleteFile(input);
+        console.log("Conversion to Mp4 finished");
+        resolve({ error: false });
+      })
+      .on("error", (err) => {
+        console.error("Error converting to video:", err.message);
+        reject({ error: true });
+      })
+      .run();
+  });
+}
+
+function generateThumbnail(videoId, folderPath, videoPath) {
+  const imageName = `${videoId}.png`;
+  // console.log({ videoId, imageName, folderPath, videoPath });
+  return new Promise((resolve, reject) => {
+    ffmpeg(videoPath)
+      .screenshots({
+        timestamps: ["50%"], // Capture a screenshot at the middle of the video
+        filename: imageName,
+        folder: folderPath,
+      })
+      .on("end", async () => {
+        try {
+          await Video.findOneAndUpdate(
+            { vId: videoId },
+            { thumbnail: `${folderPath}/${imageName}` }
+          );
+          console.log("Thumbnail updated");
+        } catch (e) {
+          console.log("");
+          console.log("Failed to update thumbnail in DB");
+          console.log("");
+        }
+        console.log("Screenshots captured successfully.");
+      })
+      .on("error", (err) => {
+        console.error("Error capturing screenshots:", err);
+      });
+  });
+}
+
+async function transcribeAudio(audioOutput, videoId) {
   try {
+    if (!fs.existsSync(audioOutput)) {
+      console.log(`Audio output ${audioOutput} notfound`);
+      return;
+    }
     const transcript = await openai.audio.transcriptions.create({
-      file: fs.createReadStream(filename),
+      file: fs.createReadStream(audioOutput),
       model: "whisper-1",
     });
 
     // update transcript in db
     const videoExists = await Video.findOne({
-      uId: videoId,
+      vId: videoId,
     });
 
     if (videoExists) {
@@ -39,38 +91,74 @@ async function transcribeAudio(filename, videoId, output) {
       const update = { transcript: transcript?.text };
       await Video.findOneAndUpdate(filter, update);
 
-      console.log("Transcribing done.");
+      console.log("Transcribing done. \n");
 
       // delete mp3 file
-      deleteFile(output);
+      deleteFile(audioOutput);
     } else {
       console.log("Failed updating transcript, Video dont exists.");
+      deleteFile(audioOutput);
     }
   } catch (e) {
-    console.log(`Error Transcribing Audio to Text: ${e.message}`);
+    console.log(`Error Transcribing Audio to Text: ${e}`);
+    deleteFile(audioOutput);
   }
 }
 
 // this whole function should run in background
-async function ProcessScreenRecordingVideos(fileName, videoId) {
+async function ProcessScreenRecordingVideos(videoId) {
   await sleep(1);
-  const input = path.join(__dirname, "..", "storage", fileName);
-  const output = path.join(__dirname, "..", "storage", `${videoId}.mp3`);
+  const input = path.join(__dirname, "..", "storage/videos", `${videoId}.webm`);
+  const output = path.join(__dirname, "..", "storage/videos", `${videoId}.mp4`);
+  const audioOutput = path.join(
+    __dirname,
+    "..",
+    "storage/audios",
+    `${videoId}.mp3`
+  );
+  const thumnnailPath = path.join(
+    __dirname,
+    "..",
+    "storage",
+    "thumbnails",
+    `${videoId}.png`
+  );
+  const thumnailFolder = path.join(__dirname, "..", "storage", "thumbnails");
 
   if (!fs.existsSync(input)) {
-    return console.log("Input file does not exist", { input });
+    console.log("Input file does not exist", { input });
+    return;
   }
-  await convertWebMToAudio(input, output);
+  // convert webm to mp4
+  const finishedConvertion = await convertWebMToMp4(input, output);
+  if (!finishedConvertion?.error) {
+    const newMp4Path = path.join(
+      __dirname,
+      "..",
+      "storage",
+      "videos",
+      `${videoId}.mp4`
+    );
+    await convertMp4ToAudio(newMp4Path, audioOutput);
 
-  // create transcription of audio file
-  await transcribeAudio(output, videoId, output);
+    // generate thumbnail image
+    if (!fs.existsSync(thumnnailPath)) {
+      await generateThumbnail(videoId, thumnailFolder, newMp4Path);
+    }
 
-  // delete webm file after use
-  deleteFile(input);
+    // generate transcript
+    await transcribeAudio(audioOutput, videoId);
+  } else {
+    console.log(`Error converting webm to mp4`);
+  }
 }
 
+async function handleIncomingStream(videoPath) {}
+
 module.exports = {
-  convertWebMToAudio,
+  convertMp4ToAudio,
   transcribeAudio,
   ProcessScreenRecordingVideos,
+  generateThumbnail,
+  convertWebMToMp4,
 };

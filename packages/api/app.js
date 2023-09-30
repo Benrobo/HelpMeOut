@@ -20,6 +20,18 @@ app.use("*", (req, res) => {
   });
 });
 
+app.use((err, req, res) => {
+  const errMsg = err?.response?.data?.message ?? err?.message;
+  console.error(`Server error: ${errMsg}`);
+  console.log(`Stack: ${err?.stack}`);
+  res.status(400).json({
+    message: errMsg,
+    details: {
+      stacks: process.env.NODE_ENV !== "production" && err?.stack,
+    },
+  });
+});
+
 const PORT = process.env.PORT || 8080;
 
 app.listen(PORT, () => {
