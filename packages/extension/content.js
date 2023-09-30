@@ -191,7 +191,8 @@ window.addEventListener("DOMContentLoaded", async () => {
   new Draggable(dragBubble, affectedElement, container);
 
   //   backend api url
-  var API_BASE_URL = `http://localhost:8080/api`;
+  var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
+  // var API_BASE_URL = `http://localhost:8080/api`;
 
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
