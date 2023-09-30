@@ -17,10 +17,10 @@
     "mongoose": "^7.5.3",
     "multer": "^1.4.5-lts.1",
     "openai": "^4.11.0",
-    "short-uuid": "^4.2.2"
+    "short-uuid": "^4.2.2",
+    "dotenv": "^16.3.1"
   },
   "devDependencies": {
-    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"
   }
 }
