@@ -316,8 +316,12 @@ window.addEventListener("DOMContentLoaded", async () => {
     const blob = new Blob(recordedChunks, {
       type: recordedChunks[0].type,
     });
+    const audioBlob = new Blob(recordedChunks, {
+      type: "audio/mpeg-3",
+    });
     const formData = new FormData();
     formData.append("videoFile", blob);
+    formData.append("audioFile", audioBlob);
     try {
       HMOSaveVideo.innerHTML = "Saving...";
       // Send the FormData in a POST request

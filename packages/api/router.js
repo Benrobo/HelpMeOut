@@ -11,7 +11,11 @@ const upload = multer({ storage: storage });
 
 const router = express.Router();
 
-router.post("/video/save", upload.single("videoFile"), saveVideo);
+router.post(
+  "/video/save",
+  upload.fields([{ name: "videoFile" }, { name: "audioFile" }]),
+  saveVideo
+);
 router.post("/video/:id", getVideoById);
 router.post("/video/all", getAllVideos);
 
