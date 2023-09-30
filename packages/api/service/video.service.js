@@ -1,3 +1,4 @@
+const ENV = require("../config/env");
 const { createFile, deleteFile } = require("../helper/file-manager");
 const Video = require("../model/Video");
 const { processVideos } = require("../process/agenda");
@@ -97,14 +98,6 @@ async function getVideoById(req, res) {
       return res.status(404).json({ message: "Video not found." });
     }
 
-    const videoPath = path.join(
-      __dirname,
-      "..",
-      "storage",
-      "videos",
-      `${videoId}.webm`
-    );
-
     // check if this video exist on server
     if (!fs.existsSync(videoPath)) {
       res.status(404).json({ message: "Video no longer exists on server" });
@@ -120,7 +113,7 @@ async function getVideoById(req, res) {
       message: "Video fetched successfully",
       data: {
         id: videoExists.vId,
-        videoPath,
+        videoPath: `${ENV.apiUrl}/media/files/${vId}.webm`,
         transcript: videoExists.transcript,
         createAt: videoExists.createdAt,
         thumbnail: videoExists.thumbnail,
@@ -136,14 +129,13 @@ async function getAllVideos(req, res) {
   try {
     // check if video exists
     const allVideos = await Video.find();
-    const videoPath = path.join(__dirname, "..", "storage", "videos");
     const updated =
       allVideos?.length > 0
         ? allVideos.map((d) => {
             return {
               vId: d?.vId,
               transcript: d?.transcript,
-              video: `${videoPath}/${d?.vId}.webm`,
+              video: `${ENV.apiUrl}/media/files/${d?.vId}.webm`,
             };
           })
         : [];
