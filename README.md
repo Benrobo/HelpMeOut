@@ -17,4 +17,4 @@
 ## Extension
 
 To use the extension, download it from the link below:
-[Extension release link]()
+[Extension release link](https://github.com/Benrobo/HelpMeOut/releases/tag/Latest)
