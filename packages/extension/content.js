@@ -1,6 +1,8 @@
 chrome.runtime.onMessage.addListener(function (msg, sender) {
-  if (msg == "open_recorder") {
+  if (msg?.msg == "open_recorder") {
     console.log("MESSAGE RECEIVED");
+    localStorage.setItem("@hmo_tabId", msg?.tab?.id);
+    localStorage.setItem("@hmo_tab_streamId", msg?.streamId);
     toggleScreenRecord();
   }
 });
@@ -24,162 +26,11 @@ var randomId = (len = 10) => {
   return id;
 };
 
-// Custom IndexDB Database
-class DatabaseClient {
-  constructor(dbName) {
-    this.dbName = dbName;
-  }
-
-  openDatabase() {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName);
-
-      request.onupgradeneeded = (event) => {
-        const db = event.target.result;
-
-        if (!db.objectStoreNames.contains("hmo-videos")) {
-          db.createObjectStore("hmo-videos", { keyPath: "id" });
-        }
-      };
-
-      request.onsuccess = (event) => {
-        this.db = event.target.result;
-        resolve(this);
-      };
-
-      request.onerror = (event) => {
-        reject(`Error opening database: ${event.target.errorCode}`);
-      };
-    });
-  }
-
-  insert(tableName, data) {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        reject("Database is not open.");
-        return;
-      }
-
-      const transaction = this.db.transaction([tableName], "readwrite");
-      const objectStore = transaction.objectStore(tableName);
-      const request = objectStore.add(data);
-
-      request.onsuccess = () => {
-        resolve("Record added successfully.");
-      };
-
-      request.onerror = (event) => {
-        reject(`Error adding record: ${event.target.errorCode}`);
-      };
-    });
-  }
-
-  update(tableName, filter, updates) {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        reject("Database is not open.");
-        return;
-      }
-
-      const transaction = this.db.transaction([tableName], "readwrite");
-      const objectStore = transaction.objectStore(tableName);
-      const request = objectStore.openCursor();
-
-      request.onsuccess = (event) => {
-        const cursor = event.target.result;
-
-        if (cursor) {
-          const record = cursor.value;
-          const match = Object.keys(filter).every(
-            (key) => filter[key] === record[key]
-          );
-
-          if (match) {
-            for (const key in updates) {
-              record[key] = updates[key];
-            }
-
-            cursor.update(record);
-            resolve("Record updated successfully.");
-            return;
-          }
-
-          cursor.continue();
-        } else {
-          reject("No matching record found.");
-        }
-      };
-    });
-  }
-
-  delete(tableName, filter) {
-    return new Promise((resolve, reject) => {
-      if (!this.db) {
-        reject("Database is not open.");
-        return;
-      }
-
-      const transaction = this.db.transaction([tableName], "readwrite");
-      const objectStore = transaction.objectStore(tableName);
-      const request = objectStore.openCursor();
-
-      request.onsuccess = (event) => {
-        const cursor = event.target.result;
-
-        if (cursor) {
-          const record = cursor.value;
-          const match = Object.keys(filter).every(
-            (key) => filter[key] === record[key]
-          );
-
-          if (match) {
-            cursor.delete();
-            resolve("Record deleted successfully.");
-            return;
-          }
-
-          cursor.continue();
-        } else {
-          reject("No matching record found.");
-        }
-      };
-    });
-  }
-
-  tableExists(tableName) {
-    return new Promise((resolve, reject) => {
-      const request = indexedDB.open(this.dbName);
-
-      request.onsuccess = (event) => {
-        const db = event.target.result;
-
-        if (db.objectStoreNames.contains(tableName)) {
-          resolve(true);
-        } else {
-          resolve(false);
-        }
-
-        db.close();
-      };
-
-      request.onerror = (event) => {
-        reject(`Error opening database: ${event.target.error}`);
-      };
-    });
-  }
-}
-
-var DB_Name = "@hmo-db";
-var DBClient = new DatabaseClient(DB_Name);
-
 window.addEventListener("DOMContentLoaded", async () => {
   insertIframe();
 
   // wait 2sec before continuing
   await sleep(1);
-
-  // open db connection
-  await DBClient.openDatabase();
 
   // draggable
   Draggable($(".help-me-bubble-control"), $(".help-me-container"));
@@ -197,6 +48,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   var HMOCameraSwitch = $(".help-me-camera-switch");
   var HMOAudioSwitch = $(".help-me-audio-switch");
   var HMOStartRecordingBtn = $(".help-me-start-record-btn");
+  var HMOScreenSelection = $all(".hmo-screen-selection-btn");
 
   // preview video element
   var HMOPreviewVideoContainer = $(".hmo-preview-video");
@@ -242,12 +94,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   var videoOff = false;
   var audioOff = false;
   var timerInterval;
-  var shouldRestart = false;
   var counter = bubbleCounter();
 
   // recorder data
   var recordedChunks = [];
-  var recordedBlobUrl = "";
   var mime = MediaRecorder.isTypeSupported("video/webm; codecs=vp9")
     ? "video/webm; codecs=vp9"
     : "video/webm";
@@ -255,6 +105,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   var stream;
   var hmo_streamVideoId = randomId();
   var streamRequestEnded = false;
+  var defaultScreen = "current_tab";
 
   // bubble counter
   timerInterval = setInterval(() => {
@@ -270,6 +121,11 @@ window.addEventListener("DOMContentLoaded", async () => {
     }
     updateCounterCont(countHr, countMin, countSec);
   }, 1000);
+
+  // interval to delete active toast
+  setInterval(() => {
+    Toast().delete();
+  }, 5000);
 
   // media icons
   var playIcon = `
@@ -330,6 +186,22 @@ window.addEventListener("DOMContentLoaded", async () => {
     />
     </svg>
 `;
+
+  // handle screen selection
+  HMOScreenSelection.forEach((btn) => {
+    btn.onclick = (e) => {
+      const dataset = e.target.dataset["name"];
+      defaultScreen = dataset;
+
+      HMOScreenSelection.forEach((btn) => {
+        btn.classList.remove("active");
+      });
+
+      // Add 'active' class to the clicked button
+      btn.classList.add("active");
+      defaultScreen = dataset;
+    };
+  });
 
   // update audio and camera switch input checked state
   HMOCameraSwitch.toggleAttribute("checked", !!cameraState);
@@ -460,6 +332,8 @@ window.addEventListener("DOMContentLoaded", async () => {
       await endStream(hmo_streamVideoId);
       streamRequestEnded = true;
       window.open(`${CLIENT_URL}/file/${hmo_streamVideoId}`);
+      await sleep(1);
+      window.location.reload();
     }
     await resetUIOnRecordStop();
   };
@@ -506,10 +380,11 @@ window.addEventListener("DOMContentLoaded", async () => {
       const url = `${API_BASE_URL}/stream/end/${videoId}`;
       const req = await fetch(url);
       const res = await req.json();
-      window.alert(res?.message);
+      Toast().success(res?.message);
     } catch (e) {
       console.log(`Something went wrong: ${e.message}`);
-      window.alert(res?.message);
+      // window.alert(res?.message);
+      Toast().error(e.message);
     }
   }
   async function streamChunksToServer(chunk) {
@@ -590,10 +465,32 @@ window.addEventListener("DOMContentLoaded", async () => {
   // start recording button
   async function startRecording() {
     try {
-      let videoInput = await navigator.mediaDevices.getDisplayMedia({
-        video: { mediaSource: "screen" },
-        audio: audioState,
-      });
+      let videoInput;
+      console.log({ defaultScreen });
+      if (defaultScreen === "current_tab") {
+        // Capture current tab
+        const streamId = JSON.parse(localStorage.getItem("@hmo_tab_stream_id"));
+        videoInput = await navigator.mediaDevices.getUserMedia({
+          audio: {
+            mandatory: {
+              chromeMediaSource: "tab",
+              chromeMediaSourceId: streamId,
+            },
+          },
+          video: {
+            mandatory: {
+              chromeMediaSource: "tab",
+              chromeMediaSourceId: streamId,
+            },
+          },
+        });
+      } else {
+        // capture entire screen
+        videoInput = await navigator.mediaDevices.getDisplayMedia({
+          video: { mediaSource: "screen" },
+          audio: audioState,
+        });
+      }
 
       let audioInput = await navigator.mediaDevices.getUserMedia({
         audio: true,
@@ -605,7 +502,7 @@ window.addEventListener("DOMContentLoaded", async () => {
         ...videoInput.getTracks(),
         ...audioInput.getTracks(),
       ]);
-
+      console.log(mediaRecorder);
       if (mediaRecorder === null) {
         mediaRecorder = new MediaRecorder(combineMedia, {
           mimeType: mime,
@@ -646,6 +543,8 @@ window.addEventListener("DOMContentLoaded", async () => {
         return true;
       }
     } catch (e) {
+      // window.alert(e);
+      Toast().error(e);
       console.log(e);
       console.log(`error starting recorder`);
       return false;
@@ -733,7 +632,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           });
         })
         .catch(function (error) {
-          window.alert(error.message);
+          Toast().error(error.message);
           console.log("Something went wrong!");
         });
     }
@@ -821,4 +720,27 @@ function Draggable(element, dragzone) {
   };
 
   dragzone.onmousedown = dragMouseDown;
+}
+
+function Toast() {
+  const toastComp = $(".hmo-error-component");
+  return {
+    success: (msg) => {
+      toastComp.innerHTML = `<span>${msg}</span>`;
+      toastComp.classList.add("success");
+      toastComp.classList.add("show");
+    },
+    error: (msg) => {
+      toastComp.innerHTML = `<span>${msg}</span>`;
+      toastComp.classList.add("error");
+      toastComp.classList.add("show");
+    },
+    delete: async () => {
+      toastComp.classList.remove("show");
+      await sleep(1);
+      toastComp.classList.remove("success");
+      toastComp.classList.remove("error");
+      toastComp.innerHTML = "";
+    },
+  };
 }

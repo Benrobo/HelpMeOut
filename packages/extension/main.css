@@ -98,7 +98,7 @@ body {
 /* help me recording component */
 .help-me-record-comp {
   width: 300px;
-  max-height: 439px;
+  max-height: 459px;
   height: auto;
   background: var(--hmo-white-100);
   border-radius: 24px;
@@ -125,6 +125,39 @@ body {
   height: auto;
   gap: 15px;
   padding: 15px 20px;
+}
+
+.help-me-record-comp .hmo-error-component {
+  position: absolute;
+  max-width: 350px;
+  width: auto;
+  margin: 0px auto;
+  position: fixed;
+  top: -10em;
+  right: 30em;
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 5px;
+  font-size: 13px;
+  transition: all 0.2s ease-in-out;
+  background: #000;
+  font-family: ppSB;
+}
+
+.help-me-record-comp .hmo-error-component.show {
+  top: 4em;
+  transition: all 0.2s ease-in-out;
+}
+
+.help-me-record-comp .hmo-error-component.error {
+  background: var(--hmo-red-200);
+  color: #fff;
+  font-family: ppSB;
+}
+.help-me-record-comp .hmo-error-component.success {
+  background: var(--hmo-green-200);
+  color: #000;
+  font-family: ppSB;
 }
 
 .help-me-record-comp .heading .top {
@@ -231,6 +264,34 @@ body {
 .help-me-record-comp .help-me-controls .help-me-audio-control .left .icon {
   width: 30px;
   height: auto;
+}
+
+/* Screen Selection */
+.help-me-record-comp .screen-selection {
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+}
+
+.help-me-record-comp .screen-selection button {
+  outline: none;
+  border: none;
+  padding: 10px;
+  background: none;
+  opacity: 0.3;
+  transition: 0.2s ease-in-out;
+  cursor: pointer;
+}
+
+.help-me-record-comp .screen-selection button.active {
+  opacity: 1;
+  font-weight: 900;
+  font-family: ppSB;
+}
+
+.help-me-record-comp .screen-selection button .icon {
+  width: 100px;
+  height: 30px;
 }
 
 /* Control Switch */

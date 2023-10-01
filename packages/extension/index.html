@@ -16,6 +16,9 @@
     <div class="help-me-container show">
       <!-- HelpMe Recorder Component -->
       <div class="help-me-record-comp show">
+        <!-- Error Component -->
+        <div class="hmo-error-component"></div>
+
         <div class="heading hmo-d-flex py-4 px-4">
           <div class="top">
             <img
@@ -49,6 +52,67 @@
             <p class="ppReg">
               This extension helps you record and share help videos with ease.
             </p>
+          </div>
+          <div class="screen-selection">
+            <button
+              class="btn ppReg hmo-screen-selection-btn"
+              data-name="fullscreen"
+            >
+              <svg
+                width="512"
+                height="512"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+                data-name="fullscreen"
+              >
+                <path
+                  fill=""
+                  fill-rule="evenodd"
+                  d="M11 17H4a3 3 0 0 1-3-3V6a3 3 0 0 1 3-3h16a3 3 0 0 1 3 3v8a3 3 0 0 1-3 3h-7v2h3a1 1 0 1 1 0 2H8a1 1 0 1 1 0-2h3v-2ZM4 5h16a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z"
+                  clip-rule="evenodd"
+                  data-name="fullscreen"
+                />
+              </svg>
+              <span>Full Screen</span>
+            </button>
+            <button
+              class="btn ppReg hmo-screen-selection-btn active"
+              data-name="current_tab"
+            >
+              <svg
+                width="512"
+                height="512"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon"
+                data-name="current_tab"
+              >
+                <g
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  data-name="current_tab"
+                >
+                  <rect
+                    width="14"
+                    height="14"
+                    x="8"
+                    y="8"
+                    rx="2"
+                    ry="2"
+                    data-name="current_tab"
+                  />
+                  <path
+                    d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+                    data-name="current_tab"
+                  />
+                </g>
+              </svg>
+              <span>Current Tab</span>
+            </button>
           </div>
         </div>
         <div class="help-me-controls">

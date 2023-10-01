@@ -114,7 +114,7 @@ export default function VideoFile({ response }) {
             <div className="w-full h-auto flex flex-col items-start justify-start">
               <div className="w-full flex items-center justify-between">
                 <p className="text-dark-100 font-ppB">Transcript</p>
-                <button
+                {/* <button
                   className={twMerge(
                     "px-3 py-2 rounded-md flex items-center justify-center gap-3 font-ppSB bg-blue-200 text-white-100 text-[10px] scale-[.90] ",
                     response?.error
@@ -124,7 +124,7 @@ export default function VideoFile({ response }) {
                   disabled={response?.error}
                 >
                   View Transcript
-                </button>
+                </button> */}
               </div>
               <div className="w-full h-auto mt-3 max-h-[250px] flex flex-col items-start justify-start gap-3 overflow-y-scroll hideScrollBar">
                 {!response?.error ? (

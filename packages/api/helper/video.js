@@ -27,16 +27,11 @@ async function transcribeAudio(audioOutput, videoId) {
       await Video.findOneAndUpdate(filter, update);
 
       console.log("Transcribing done. \n");
-
-      // delete mp3 file
-      deleteFile(audioOutput);
     } else {
       console.log("Failed updating transcript, Video dont exists.");
-      deleteFile(audioOutput);
     }
   } catch (e) {
     console.log(`Error Transcribing Audio to Text: ${e}`);
-    deleteFile(audioOutput);
   }
 }
 

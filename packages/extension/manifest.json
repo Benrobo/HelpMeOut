@@ -20,7 +20,7 @@
       "run_at": "document_start"
     }
   ],
-  "permissions": ["activeTab", "tabs", "storage", "scripting"],
+  "permissions": ["activeTab", "tabs", "storage", "scripting", "tabCapture"],
   "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
     {
