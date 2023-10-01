@@ -141,8 +141,8 @@ async function getAllVideos(req, res) {
         ? allVideos.map((d) => {
             return {
               vId: d?.vId,
-              transcript: d?.transcript,
               video: `${ENV.apiUrl}/media/files/${d?.vId}.webm`,
+              createdAt: d?.createdAt,
             };
           })
         : [];
