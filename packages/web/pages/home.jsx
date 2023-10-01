@@ -7,14 +7,13 @@ import VideoCard from "../components/VideoCard";
 import { getAllVideos } from "../http";
 import usePageLoaded from "../hooks/usePageLoaded";
 import moment from "moment";
+import { Spinner } from "../components/Loader";
 
 function Home({ response }) {
-  const { pageLoaded } = usePageLoaded();
+  const { pageLoaded } = usePageLoaded(1);
   const error = response?.error;
   const respMsg = response?.msg;
   const data = response?.data;
-
-  console.log(data);
 
   return (
     <div className="w-full h-screen overflow-y-hidden">
@@ -43,7 +42,9 @@ function Home({ response }) {
         <div className="w-full px-[4em] min-h-[15em] mt-9 flex items-start justify-start flex-col gap-4 mb-5 overflow-y-scroll">
           <p className="text-dark-200 font-ppReg text-[12px] ">Recent files</p>
           <div className="w-full flex items-center justify-start flex-wrap">
-            {!error ? (
+            {pageLoaded ? (
+              <Spinner color="#000" />
+            ) : !error ? (
               data?.length > 0 ? (
                 data.map((d) => (
                   <VideoCard
