@@ -36,10 +36,10 @@ window.addEventListener("DOMContentLoaded", async () => {
   Draggable($(".help-me-bubble-control"), $(".help-me-container"));
 
   // backend api / client url
-  var CLIENT_URL = "http://localhost:3000";
-  // var CLIENT_URL = "https://helpmeoutapp.vercel.app";
-  // var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
-  var API_BASE_URL = `http://localhost:8080/api`;
+  // var CLIENT_URL = "http://localhost:3000";
+  var CLIENT_URL = "https://helpmeoutapp.vercel.app";
+  var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
+  // var API_BASE_URL = `http://localhost:8080/api`;
 
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
