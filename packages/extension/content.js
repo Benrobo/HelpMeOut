@@ -175,24 +175,19 @@ var DBClient = new DatabaseClient(DB_Name);
 window.addEventListener("DOMContentLoaded", async () => {
   insertIframe();
 
-  // open db connection
-  await DBClient.openDatabase();
-
   // wait 2sec before continuing
   await sleep(1);
 
-  // Draggable
-  var container = $("body");
-  var dragElement = $(".help-me-bubble-user-img");
-  var dragBubble = $(".help-me-bubble-main-controls");
-  var affectedElement = $(".help-me-bubble-control");
-  // initialize drag
-  new Draggable(dragElement, affectedElement, container);
-  new Draggable(dragBubble, affectedElement, container);
+  // open db connection
+  await DBClient.openDatabase();
 
-  //   backend api url
-  var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
-  // var API_BASE_URL = `http://localhost:8080/api`;
+  // draggable
+  Draggable($(".help-me-bubble-control"), $(".help-me-container"));
+
+  // backend api / client url
+  var CLIENT_URL = "http://localhost:3000";
+  // var API_BASE_URL = `https://seashell-app-4jicj.ondigitalocean.app/api`;
+  var API_BASE_URL = `http://localhost:8080/api`;
 
   // recording components
   var HMOContainer = $(".help-me-iframe-container");
@@ -464,6 +459,7 @@ window.addEventListener("DOMContentLoaded", async () => {
     if (!streamRequestEnded) {
       await endStream(hmo_streamVideoId);
       streamRequestEnded = true;
+      window.open(`${CLIENT_URL}/file/${hmo_streamVideoId}`);
     }
     await resetUIOnRecordStop();
   };
@@ -487,43 +483,7 @@ window.addEventListener("DOMContentLoaded", async () => {
   };
 
   //   save video
-  HMOSaveVideo.onclick = async () => {
-    const videoBlob = new Blob(recordedChunks, {
-      type: recordedChunks[0].type,
-    });
-    const audioBlob = new Blob(recordedChunks, {
-      type: "audio/mpeg-3",
-    });
-    return;
-    const videoId = randomId();
-    const formData = new FormData();
-    formData.append("blob", audioBlob);
-    formData.append("videoId", videoId);
-
-    // save blob to indexDB first
-    await DBClient.insert("hmo-videos", {
-      id: videoId,
-      blob: videoBlob,
-    });
-
-    return;
-    try {
-      HMOSaveVideo.innerHTML = "Saving...";
-      // Send the FormData in a POST request
-      const url = `${API_BASE_URL}/video/save`;
-      const req = await fetch(url, {
-        method: "POST",
-        body: formData,
-      });
-      const result = await req.json();
-      window.alert(result?.message);
-      HMOSaveVideo.innerHTML = "Save Video";
-    } catch (e) {
-      HMOSaveVideo.innerHTML = "Save Video";
-      window.alert(`Something went wrong.`);
-      console.log(`Something went wrong saving video: ${e}`);
-    }
-  };
+  HMOSaveVideo.onclick = async () => {};
 
   // cancel video
   HMOCancelVideo.onclick = () => {
@@ -609,15 +569,19 @@ window.addEventListener("DOMContentLoaded", async () => {
       track.stop();
     });
 
+    // Hide Main Container
+    HMOContainer.classList.remove("show");
+    HMOContainer.classList.add("hide");
+
     // display preview video
     await sleep(1);
-    HMOPreviewVideoContainer.classList.remove("hide");
-    HMOPreviewVideoContainer.classList.add("show");
-    HMOPreviewVideo.src = recordedBlobUrl;
+    // HMOPreviewVideoContainer.classList.remove("hide");
+    // HMOPreviewVideoContainer.classList.add("show");
+    // HMOPreviewVideo.src = recordedBlobUrl;
 
     // show the record component
-    HMORecorderComp.classList.remove("hide");
-    HMORecorderComp.classList.add("show");
+    // HMORecorderComp.classList.remove("hide");
+    // HMORecorderComp.classList.add("show");
 
     // hide recorder ui component
     hideRecorderComp();
@@ -672,6 +636,7 @@ window.addEventListener("DOMContentLoaded", async () => {
           if (!streamRequestEnded) {
             await endStream(hmo_streamVideoId);
             streamRequestEnded = true;
+            window.open(`${CLIENT_URL}/file/${hmo_streamVideoId}`);
           }
         });
 
@@ -816,38 +781,44 @@ function toggleScreenRecord() {
   mainDiv.classList.toggle("hide");
 }
 
-function Draggable(draggableElement, affectedElement, container) {
-  let isDragging = false;
-  let offsetX, offsetY;
+function Draggable(element, dragzone) {
+  let pos1 = 0,
+    pos2 = 0,
+    pos3 = 0,
+    pos4 = 0;
 
-  draggableElement.addEventListener("mousedown", (e) => {
-    isDragging = true;
-    const rect = draggableElement.getBoundingClientRect();
-    offsetX = e.clientX - rect.left;
-    offsetY = e.clientY - rect.top;
-    affectedElement.style.zIndex = "1";
-  });
+  element.style.cursor = "grabbing";
 
-  document.addEventListener("mousemove", (e) => {
-    if (isDragging) {
-      const containerRect = container.getBoundingClientRect();
-      const maxX = containerRect.width - draggableElement.offsetWidth;
-      const maxY = containerRect.height - draggableElement.offsetHeight;
+  const dragMouseUp = () => {
+    document.onmouseup = null;
+    document.onmousemove = null;
 
-      let x = e.clientX - offsetX - containerRect.left;
-      let y = e.clientY - offsetY - containerRect.top;
+    element.classList.remove("drag");
+  };
 
-      // Check boundaries
-      x = Math.max(0, Math.min(x, maxX));
-      y = Math.max(0, Math.min(y, maxY));
+  const dragMouseMove = (event) => {
+    event.preventDefault();
 
-      affectedElement.style.left = x + "px";
-      affectedElement.style.top = y + "px";
-    }
-  });
+    pos1 = pos3 - event.clientX;
+    pos2 = pos4 - event.clientY;
+    pos3 = event.clientX;
+    pos4 = event.clientY;
 
-  document.addEventListener("mouseup", () => {
-    isDragging = false;
-    affectedElement.style.zIndex = "0";
-  });
+    element.style.top = `${element.offsetTop - pos2}px`;
+    element.style.left = `${element.offsetLeft - pos1}px`;
+  };
+
+  const dragMouseDown = (event) => {
+    event.preventDefault();
+
+    pos3 = event.clientX;
+    pos4 = event.clientY;
+
+    element.classList.add("drag");
+
+    document.onmouseup = dragMouseUp;
+    document.onmousemove = dragMouseMove;
+  };
+
+  dragzone.onmousedown = dragMouseDown;
 }

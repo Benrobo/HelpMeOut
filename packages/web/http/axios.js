@@ -1,8 +1,9 @@
 const axios = require("axios");
+const { default: ENV } = require("../config/env");
 
 // axios config for server
 const $http = axios.create({
-  baseURL: "https://api.themoviedb.org/3",
+  baseURL: ENV.apiUrl,
   timeout: 30000,
   headers: {
     "Content-Type": "application/json",

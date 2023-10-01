@@ -98,6 +98,13 @@ async function getVideoById(req, res) {
       return res.status(404).json({ message: "Video not found." });
     }
 
+    const videoPath = path.join(
+      __dirname,
+      "..",
+      "storage/videos",
+      `${videoId}.webm`
+    );
+
     // check if this video exist on server
     if (!fs.existsSync(videoPath)) {
       res.status(404).json({ message: "Video no longer exists on server" });
@@ -113,7 +120,7 @@ async function getVideoById(req, res) {
       message: "Video fetched successfully",
       data: {
         id: videoExists.vId,
-        videoPath: `${ENV.apiUrl}/media/files/${vId}.webm`,
+        videoPath: `${ENV.apiUrl}/media/files/${videoExists?.vId}.webm`,
         transcript: videoExists.transcript,
         createAt: videoExists.createdAt,
         thumbnail: videoExists.thumbnail,

@@ -80,7 +80,7 @@ body {
 }
 
 .help-me-container {
-  width: 0px;
+  /* width: 0px; */
   min-width: 0px;
   height: 100vh;
   position: relative;

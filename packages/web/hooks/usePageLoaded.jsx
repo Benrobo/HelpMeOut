@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from "react";
 
 function usePageLoaded(count) {
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setTimeout(() => {
-      setLoading(true);
+      setLoading(false);
     }, count * 1000);
     // return clearTimeout(timeout);
   }, [loading]);

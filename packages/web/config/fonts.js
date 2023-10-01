@@ -1,4 +1,4 @@
-import { Poppins, DM_Sans, Sora } from "@next/font/google";
+import { Poppins, Inter, Work_Sans, Manrope, Sora } from "@next/font/google";
 
 export const ppReg = Poppins({
   subsets: ["latin"],
@@ -43,4 +43,25 @@ export const soraEB = Poppins({
   subsets: ["latin"],
   variable: "--font-soraEB",
   weight: ["900"],
+});
+
+export const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "700", "500"],
+  variable: "--font-inter",
+});
+export const sora = Sora({
+  weight: ["600", "700"],
+  variable: "--font-sora",
+  subsets: ["latin"],
+});
+export const workSans = Work_Sans({
+  weight: ["400", "500"],
+  variable: "--font-workSans",
+  subsets: ["latin"],
+});
+export const manrope = Manrope({
+  weight: ["500"],
+  subsets: ["latin"],
+  variable: "--font-manrope",
 });
