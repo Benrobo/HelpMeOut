@@ -5,6 +5,11 @@ const bodyParser = require("body-parser");
 const router = require("./router");
 const dbConnect = require("./config/mongodb");
 const path = require("path");
+const swaggerUi = require("swagger-ui-express");
+const YAML = require("yaml");
+const swaggerFile = require("./doc/swagger.js");
+
+const swaggerDocument = YAML.parse(swaggerFile, "utf8");
 
 // connect db
 dbConnect();
@@ -20,6 +25,9 @@ app.use(
 );
 
 app.use("/api", router);
+
+// doc
+app.use("/api/doc", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 app.use("*", (req, res) => {
   res.status(404).json({

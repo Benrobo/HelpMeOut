@@ -37,7 +37,6 @@ async function transcribeAudio(audioOutput, videoId) {
 
 // this whole function should run in background
 async function ProcessScreenRecordingVideos(videoId) {
-  await sleep(1);
   const input = path.join(__dirname, "..", "storage/videos", `${videoId}.webm`);
 
   if (!fs.existsSync(input)) {
