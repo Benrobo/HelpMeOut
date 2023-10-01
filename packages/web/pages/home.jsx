@@ -41,7 +41,7 @@ function Home({ response }) {
         <br />
         <div className="w-full px-[4em] min-h-[15em] mt-9 flex items-start justify-start flex-col gap-4 mb-5 overflow-y-scroll">
           <p className="text-dark-200 font-ppReg text-[12px] ">Recent files</p>
-          <div className="w-full flex items-center justify-start flex-wrap">
+          <div className="w-full flex items-center justify-start flex-wrap gap-7">
             {pageLoaded ? (
               <Spinner color="#000" />
             ) : !error ? (
