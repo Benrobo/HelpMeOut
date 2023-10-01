@@ -2,6 +2,8 @@
 
 ### [API URL](https://seashell-app-4jicj.ondigitalocean.app/)
 
+### [Documentation URL](https://seashell-app-4jicj.ondigitalocean.app/api/doc)
+
 ### [Client URL](https://helpmeoutapp.vercel.app/)
 
 ### Some Links on client side
